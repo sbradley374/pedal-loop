@@ -1,0 +1,22 @@
+__pycache__/
+*.py[cod]
+.venv/
+.DS_Store
+*.tmp
+data/terrain-cache/
+
+# Local configuration and credentials.
+.env
+.env.*
+!.env.example
+.pytest_cache/
+
+# Keep future regional downloads local. Bundle only the two documented demos.
+data/*.gz
+data/*.region.json
+!data/providence.osm.json.gz
+!data/providence.osm.json.gz.elevation.json.gz
+!data/providence.osm.json.region.json
+!data/region-86dc3c4a39ee1d6e.osm.json.gz
+!data/region-86dc3c4a39ee1d6e.osm.json.gz.elevation.json.gz
+!data/region-86dc3c4a39ee1d6e.osm.json.region.json

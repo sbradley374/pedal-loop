@@ -1,0 +1,2 @@
+# Only required to download/decode NEW terrain tiles; cached routes need stdlib only.
+Pillow>=10.4,<12

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#153e35"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><title>Pedal Loop — Take the long way home</title><link rel="stylesheet" href="/vendor/leaflet.css"><link rel="stylesheet" href="/style.css"><script defer src="/vendor/leaflet.js"></script><script defer src="/app.js"></script></head>
+<body>
+<header><a class="brand" href="/" aria-label="Pedal Loop home"><span class="brand-icon">↻</span> pedal loop<span class="tag">FIELD NOTES / 01</span></a><div class="header-right"><span class="dot"></span> <span id="region-heading">ROAD + TERRAIN EXPLORER</span> <span class="beta">MVP</span></div></header>
+<main>
+<aside>
+<div class="eyebrow">LESS TRAFFIC. MORE RIDING.</div><h1>Take the long<br> way home.</h1><p class="intro">A loop worth getting out for.<br>Start here. Find your way back.</p>
+<form id="planner">
+<label for="mode">Road data</label><select id="mode"><option value="synthetic">Synthetic offline demo</option></select>
+<label for="place">01 <span>Choose your start</span></label><select id="place"><option value="41.8268,-71.4025">Brown University · College Hill</option><option value="41.8240,-71.4128">Downtown Providence</option><option value="41.7739,-71.3705">East Bay Bike Path · Riverside</option><option value="42.3550,-71.0656">Boston Common · Massachusetts</option><option value="44.4759,-73.2121">Burlington · Vermont</option><option value="51.5074,-0.1278">Central London · UK</option><option value="custom">Custom coordinates / click map</option></select>
+<div class="coordinate-row"><div><label for="lat">Latitude</label><input id="lat" type="number" step="any" min="-85" max="85" value="41.8268" required></div><div><label for="lon">Longitude</label><input id="lon" type="number" step="any" min="-180" max="180" value="-71.4025" required></div></div>
+<div class="region-tools"><label for="saved-region">Cached road regions</label><select id="saved-region"><option value="">No cached regions</option></select><button id="load-region" class="region-button" type="button">↓ Load roads + terrain here</button><p class="help" id="region-note">A download uses the selected start and ride distance. Cached regions work offline.</p><p id="region-status" class="help" role="status" aria-live="polite"></p></div>
+<div class="distance-label"><label for="miles">02 <span>How far?</span></label><output id="miles-value">30 <small>mi</small></output></div><input id="miles" type="range" min="5" max="75" value="30"><div class="range-ends"><span>5 miles</span><span>75 miles</span></div>
+<label>03 <span>Make it your ride</span></label>
+<div class="preference"><label for="traffic">Avoid busier roads</label><output id="traffic-value">High</output></div><input id="traffic" type="range" min="0" max="1" step="0.1" value="0.8">
+<div class="preference"><label for="stops">Avoid stops & junctions</label><output id="stops-value">Medium</output></div><input id="stops" type="range" min="0" max="1" step="0.1" value="0.6">
+<label for="hills" class="small-label">Hills</label><select id="hills"><option value="neutral">Go with the terrain</option><option value="avoid">Prefer flatter roads</option><option value="seek">Prefer hills</option></select><p id="hill-note" class="help">Terrain-based estimates where available; bridges and tunnels can differ.</p>
+<label class="checkbox"><input id="strict" type="checkbox"><span>Only explicitly mapped paved surfaces</span></label><p class="help">Known unpaved roads are always excluded. Untagged surfaces are allowed unless you check this.</p>
+<button id="generate" type="submit">Find my loop <span>↗</span></button>
+</form><p class="fine-print">A planning aid, not a safety assessment. Check road access, surfaces, and conditions before riding.</p>
+</aside>
+<section class="workspace" aria-label="Route results">
+<div class="map-heading"><div><span class="eyebrow">YOUR NEXT RIDE</span><h2 id="map-title">A little farther from the usual.</h2></div><button id="fit" class="text-button" type="button">↗ Fit route</button></div>
+<div class="map-wrap"><div id="map" aria-label="Interactive route map"></div><div id="source-badge" class="map-badge">Loading road data…</div><div class="map-hint">Click the map to move your start</div></div>
+<div id="status" role="status" aria-live="polite">Loading planner…</div>
+<div id="routes" class="route-cards" aria-label="Route alternatives"></div>
+<section id="detail" hidden>
+<div class="detail-top"><div><span class="eyebrow">THE RIDE, AT A GLANCE</span><h2 id="route-title">Best match</h2></div><a id="gpx" class="download" download>↓ Download GPX</a></div>
+<div class="metrics"><div><strong id="distance">—</strong><span>distance</span></div><div><strong id="ascent">—</strong><span>elevation gain</span></div><div><strong id="junctions">—</strong><span>mapped junctions</span></div><div><strong id="unknown">—</strong><span>surface unknown</span></div></div>
+<div class="terrain-stats"><span id="descent"></span><span id="grade"></span><span id="terrain-source"></span></div>
+<div id="profile-wrap"><div class="profile-header"><span>ELEVATION PROFILE</span><span id="profile-note"></span></div><svg id="profile" viewBox="0 0 800 100" role="img" aria-label="Elevation profile"></svg></div>
+<div id="profile-readout" class="help">Move over the elevation profile to inspect height and distance.</div>
+<div id="confidence" class="confidence"></div>
+</section>
+<footer><span>Built for the ride out & the ride home.</span><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap contributors · ODbL</a><a href="https://github.com/tilezen/joerd/blob/master/docs/attribution.md" target="_blank" rel="noreferrer">Elevation: Mapzen & source contributors</a><a href="https://www.openstreetmap.org/fixthemap" target="_blank" rel="noreferrer">Report a map issue</a></footer>
+</section>
+</main>
+</body></html>
