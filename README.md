@@ -77,6 +77,8 @@ Use the same region-and-terrain pipeline as the UI:
 python scripts/prepare_region.py --lat 44.4759 --lon -73.2121 --miles 10 --label "Burlington, Vermont"
 ```
 
+The development machine also has a locally imported 9 km Boulder region, with four passing software benchmark scenarios in `docs/benchmark-boulder-2026-10-20.json`. It is Git-ignored and is not included in fresh clones or guaranteed in hosted deployments. To prepare it elsewhere, run `python scripts/prepare_regions.py --only boulder --download`.
+
 Restart the app to discover a region prepared by a separate CLI process. In-app imports require no restart. On startup the default region is Providence; other regions remain in the cache selector. Each request identifies its own region; switching in one browser does not switch another browser’s roads.
 
 For explicit road-only imports, the original importer remains available:
