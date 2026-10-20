@@ -20,6 +20,22 @@ function updateStart() {
   const lat = +$('lat').value, lon = +$('lon').value;
   if (Number.isFinite(lat) && Number.isFinite(lon) && Math.abs(lat) <= 85 && Math.abs(lon) <= 180) marker?.setLatLng([lat, lon]);
 }
+function coversStart(region, lat, lon) {
+  if(!region.center || !region.radius_m) return false;
+  const rad=Math.PI/180, [centerLat,centerLon]=region.center;
+  const a=Math.sin((lat-centerLat)*rad/2)**2 + Math.cos(lat*rad)*Math.cos(centerLat*rad)*Math.sin((lon-centerLon)*rad/2)**2;
+  return 6371000*2*Math.asin(Math.sqrt(Math.min(1,a))) <= region.radius_m;
+}
+async function selectCachedRegionForStart() {
+  if($('mode').value!=='osm' || !info || importing || $('generate').disabled) return;
+  const lat=+$('lat').value, lon=+$('lon').value;
+  const candidates=info.regions.filter(region=>coversStart(region,lat,lon));
+  if(candidates.some(region=>region.id===activeRegion)) return;
+  // Prefer the largest available snapshot so longer loops have room to fit.
+  candidates.sort((a,b)=>b.radius_m-a.radius_m);
+  if(candidates.length) await loadRegion(candidates[0].id,{preserveStart:true});
+  else status('This start is outside cached coverage. Choose a cached road region or load roads here when downloads are enabled.',true);
+}
 function setMode() {
   const synthetic = $('mode').value === 'synthetic';
   if (tiles && map.hasLayer(tiles)) map.removeLayer(tiles);
@@ -198,7 +214,7 @@ async function refreshInfo(regionId=activeRegion, isCurrent=()=>true) {
   $('region-note').textContent=active ? `Loaded: ${active.label}, ${Math.round(active.radius_m/1000)} km radius. New downloads send the selected region to OSM and AWS. Cached regions work offline.` : 'Load a region around your start. Downloads send the selected region to OSM and AWS.';
   return true;
 }
-async function loadRegion(regionId=null) {
+async function loadRegion(regionId=null, {preserveStart=false}={}) {
   if (importing || $('generate').disabled || !$('planner').reportValidity()) return;
   const previousRegion=activeRegion;
   importing=true; invalidate();
@@ -220,7 +236,7 @@ async function loadRegion(regionId=null) {
       activeRegion=job.region_id; message=job.message;
     }
     await refreshInfo();setMode();
-    if(regionId && info.source.center) {
+    if(regionId && !preserveStart && info.source.center) {
       [$('lat').value,$('lon').value]=info.source.center;
       $('place').value='custom';updateStart();map.setView(marker.getLatLng(),11);
     }
@@ -244,6 +260,7 @@ async function init() {
     navigator.geolocation.getCurrentPosition(position=>{
       $('lat').value=position.coords.latitude.toFixed(6); $('lon').value=position.coords.longitude.toFixed(6);
       $('place').value='custom'; invalidate(); updateStart(); map.setView(marker.getLatLng(),12);
+      selectCachedRegionForStart();
     },()=>status('Could not get your location. Click the map or enter coordinates.',true),{timeout:10000});
   });
   updateSaved();
@@ -264,7 +281,7 @@ async function init() {
     const [id,index]=$('saved-rides').value.split(':'); if(id) openRide(id,+index).catch(e=>status(e.message,true));
   });
   $('planner').addEventListener('input',e => { if(['mode','place','saved-region'].includes(e.target.id))return; updateLabels();invalidate(); if(['lat','lon'].includes(e.target.id)){$('place').value='custom';updateStart();} });
-  $('place').addEventListener('change',()=>{if($('place').value!=='custom'){[$('lat').value,$('lon').value]=$('place').value.split(',');updateStart();map.setView(marker.getLatLng(),11);}invalidate();});
+  $('place').addEventListener('change',()=>{if($('place').value!=='custom'){[$('lat').value,$('lon').value]=$('place').value.split(',');updateStart();map.setView(marker.getLatLng(),11);}invalidate();selectCachedRegionForStart();});
   $('mode').addEventListener('change',setMode);
   $('load-region').addEventListener('click',()=>loadRegion());
   $('saved-region').addEventListener('change',()=>{if($('saved-region').value)loadRegion($('saved-region').value);});

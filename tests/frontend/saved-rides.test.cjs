@@ -66,3 +66,44 @@ test('an obsolete request failure does not replace the current status', async()=
   s.pending[0].reject(new Error('Old error')); await loading;
   assert.equal(s.context.messages.at(-1),'New search');
 });
+
+test('a start preset switches to cached coverage without moving the selected start', async()=>{
+  const s=setup();
+  s.run(`
+    info={regions:[
+      {id:'providence',center:[41.8268,-71.4025],radius_m:20000},
+      {id:'burlington',center:[44.4759,-73.2121],radius_m:9000}
+    ]};
+    activeRegion='providence'; $('mode').value='osm';
+    $('lat').value=44.48; $('lon').value=-73.21;
+    loadRegion=async(id,options)=>rendered.push({id,...options});
+  `);
+  await s.run('selectCachedRegionForStart()');
+  assert.equal(s.context.rendered[0].id,'burlington');
+  assert.equal(s.context.rendered[0].preserveStart,true);
+  assert.equal(s.elements.get('lat').value,44.48);
+});
+
+test('coverage selection retains the current region and never invents coverage',async()=>{
+  const s=setup();
+  s.run(`
+    info={regions:[{id:'current',center:[41.8,-71.4],radius_m:20000}]};
+    activeRegion='current'; $('mode').value='osm';
+    $('lat').value=41.8; $('lon').value=-71.4;
+    loadRegion=async(id)=>rendered.push(id);
+  `);
+  await s.run('selectCachedRegionForStart()');
+  assert.equal(s.context.rendered.length,0);
+  s.run("$('lat').value=30;");
+  await s.run('selectCachedRegionForStart()');
+  assert.equal(s.context.rendered.length,0);
+  assert.match(s.context.messages.at(-1),/outside cached coverage/);
+});
+
+test('synthetic mode does not select a real dataset', async()=>{
+  const s=setup();
+  s.run("$('mode').value='synthetic';");
+  await s.run('selectCachedRegionForStart()');
+  assert.equal(s.pending.length,0);
+  assert.equal(s.context.messages.length,0);
+});

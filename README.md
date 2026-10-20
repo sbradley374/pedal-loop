@@ -33,7 +33,7 @@ On Windows activate with `.venv\Scripts\activate`. The app binds only to your co
 
 ## Plan a ride anywhere the data supports
 
-1. Choose a preset, enter latitude/longitude, or click the map. Providence, Boston, Burlington and London are convenient starting presets; **a preset does not mean its roads have already been downloaded**.
+1. Choose a preset, enter latitude/longitude, or click the map. Presets and **Use my location** select a matching cached region when one is available, preserving your chosen point. Providence, Boston, Burlington and London are convenient starting presets; **a preset does not mean its roads have already been downloaded**.
 2. Set the desired distance (5–75 miles), traffic/stop preferences, and hill preference.
 3. For a new place, click **Load roads + terrain here**. Progress appears under the button. The regional radius is estimated from the chosen distance, capped at 30 km for this local prototype. The download may take several minutes or fail if the public provider is busy.
 4. Click **Find my loop**. Choose an alternative, compare climbing estimates, inspect the profile, and download GPX. Move over the profile for distance/elevation readings.
