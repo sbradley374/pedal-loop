@@ -61,8 +61,11 @@ class PlannerService:
         self.demo = demo
 
     def info(self, region_id=None):
-        selected = self.regions.get(region_id)
+        if self.demo and region_id is not None:
+            raise ValueError('Region selection is disabled in forced synthetic mode.')
+        selected = None if self.demo else self.regions.get(region_id)
         catalog = self.regions.info()
+        if self.demo: catalog['regions'] = []
         catalog['active_region'] = region_id or self.regions.active_id
         catalog['region_import_enabled'] = self.imports_enabled
         return {'osm_available': selected is not None, 'default_mode': 'osm' if selected else 'synthetic',

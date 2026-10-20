@@ -6,7 +6,7 @@ A local road-cycling loop planner with real OpenStreetMap roads, terrain elevati
 
 - Lossless directed road-chain compression and preference-weighted landmark A* reduce repeated searches over shape points. Full road geometry and distance are retained.
 - Adaptive distance refinement with a hard, user-selected tolerance (default ±10%, UI choices 5/10/20/30%). No silent relaxation.
-- Strict exclusion of primary/secondary roads, visible major-road percentages, and an optional estimated climbing limit.
+- Strict exclusion of primary/secondary roads, visible major-road percentages, and an optional estimated climbing limit. With a neutral hill preference, a climbing limit also steers the candidate search toward flatter roads.
 - Supported node-via turn restrictions in new regional imports, including bicycle exceptions and restrictions across loop legs. Complex/via-way/conditional/same-way restrictions remain explicitly unsupported. Bundled snapshots predate restriction imports.
 - Background route jobs, cancellation, bounded queues, reusable results, and per-request region selection.
 - Persistent GPX/result links, saved rides on this browser, copyable unlisted links, location selection, and an approximate coverage circle.

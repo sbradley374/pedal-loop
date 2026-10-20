@@ -121,6 +121,9 @@ def plan(graph, prefs, cancelled=lambda: False):
         raise ValueError('Start is more than 1.5 km from a matching road. Choose a point inside the loaded region or import a closer OSM snapshot.')
     target = prefs['miles']*MILE
     tolerance = prefs.get('tolerance', 10)/100
+    # A climb ceiling should guide candidate generation, not merely discard
+    # hillier neutral candidates after the search. An explicit hill choice wins.
+    search_prefs = {**prefs,'hills':'avoid'} if prefs.get('max_ascent') is not None and prefs['hills']=='neutral' else prefs
     snap_index = None
     if prefs['strict'] or prefs.get('avoid_major'):
         connected = graph.round_trip_nodes(start,prefs['strict'],prefs.get('avoid_major',False))
@@ -150,7 +153,7 @@ def plan(graph, prefs, cancelled=lambda: False):
         anchors.append(start)
         route, used = [], set()
         for leg, (u,v) in enumerate(zip(anchors, anchors[1:])):
-            path = shortest_path(graph,u,v,prefs,used,costs,
+            path = shortest_path(graph,u,v,search_prefs,used,costs,
                                  incoming=route[-1].way if route else None,
                                  final_way=route[0].way if leg == 2 else None,
                                  cancelled=cancelled)
