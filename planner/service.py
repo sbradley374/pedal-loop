@@ -12,6 +12,8 @@ import uuid
 from . import graph, routing
 from .regions import Regions
 
+CACHE_VERSION = 3  # Bump when routing, filtering, or elevation math changes.
+
 
 class Busy(ValueError):
     pass
@@ -84,7 +86,7 @@ class PlannerService:
         mode = payload.get('mode', 'synthetic' if self.demo else 'osm')
         selected = self.regions.get(payload.get('region_id')) if mode == 'osm' else self.fixture
         if cancelled(): raise ValueError('Route search cancelled.')
-        identity = {'version': 3, 'source': selected.metadata, 'preferences': prefs}
+        identity = {'version': CACHE_VERSION, 'source': selected.metadata, 'preferences': prefs}
         key = hashlib.sha256(json.dumps(identity, sort_keys=True).encode()).hexdigest()
         cached = self.store.get(key, by_key=True)
         if cached:

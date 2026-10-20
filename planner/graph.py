@@ -60,22 +60,46 @@ class Graph:
         self.neighbors[edge.u].add(edge.v)
         self.neighbors[edge.v].add(edge.u)
 
-    def nearest(self, point, strict=False, avoid_major=False):
-        # Local metre grid avoids repeatedly scanning hundreds of thousands of
-        # shape nodes. Final candidate comparisons still use great-circle distance.
+    def snap_index(self, strict=False, avoid_major=False, nodes=None):
+        scale = 111195 * math.cos(math.radians(next(iter(self.nodes.values()))[0])) if self.nodes else 111195
+        cells, candidates = defaultdict(list), []
+        for n in self.nodes if nodes is None else sorted(nodes):
+            lat,lon=self.nodes[n]
+            if any(self.edge_allowed(e,strict,avoid_major) for e in self.adj[n]):
+                cells[(math.floor(lon*scale/1000),math.floor(lat*111195/1000))].append(n)
+                candidates.append(n)
+        return scale,cells,candidates
+
+    @staticmethod
+    def edge_allowed(edge,strict=False,avoid_major=False):
+        return ((not strict or edge.surface in PAVED) and
+                (not avoid_major or edge.road not in {'primary','primary_link','secondary','secondary_link'}))
+
+    def round_trip_nodes(self,start,strict=False,avoid_major=False):
+        # Restriction-independent reachability is used only to choose anchors;
+        # the actual shortest paths still enforce supported turn restrictions.
+        visited,stack,reverse={start},[start],defaultdict(list)
+        while stack:
+            node=stack.pop()
+            for edge in self.adj[node]:
+                if not self.edge_allowed(edge,strict,avoid_major):continue
+                reverse[edge.v].append(node)
+                if edge.v not in visited:
+                    visited.add(edge.v);stack.append(edge.v)
+        returns,stack={start},[start]
+        while stack:
+            for node in reverse[stack.pop()]:
+                if node not in returns:returns.add(node);stack.append(node)
+        return returns
+
+    def nearest(self, point, strict=False, avoid_major=False, index=None):
+        # Local metre grid; final distances use great-circle geometry.
         cache_key = (strict, avoid_major)
-        if cache_key not in self._spatial:
-            scale = 111195 * math.cos(math.radians(next(iter(self.nodes.values()))[0])) if self.nodes else 111195
-            cells = defaultdict(list)
-            candidates = []
-            for n, (lat, lon) in self.nodes.items():
-                if any((not strict or e.surface in PAVED) and
-                       (not avoid_major or e.road not in {'primary','primary_link','secondary','secondary_link'})
-                       for e in self.adj[n]):
-                    cells[(math.floor(lon*scale/1000), math.floor(lat*111195/1000))].append(n)
-                    candidates.append(n)
-            self._spatial[cache_key] = (scale, cells, candidates)
-        scale, cells, candidates = self._spatial[cache_key]
+        if index is None:
+            if cache_key not in self._spatial:
+                self._spatial[cache_key]=self.snap_index(strict,avoid_major)
+            index=self._spatial[cache_key]
+        scale,cells,candidates=index
         if not candidates:
             raise ValueError('No routable roads match the road and pavement filters in this dataset.')
         x, y = point[1]*scale, point[0]*111195

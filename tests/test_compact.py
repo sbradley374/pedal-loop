@@ -63,6 +63,15 @@ class CompactTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'cancelled'):
             plan(self.network(),validate({'lat':41,'lon':-71,'miles':5}),cancelled=lambda:True)
 
+    def test_filtered_anchor_component_excludes_one_way_traps(self):
+        g=Graph();g.nodes={1:(0,0),2:(0,.001),3:(.001,.001),4:(.002,.001)}
+        for u,v,road in [(1,2,'residential'),(2,1,'residential'),(2,3,'residential'),
+                         (3,4,'primary'),(4,3,'primary')]:
+            g.add(Edge(u,v,distance(g.nodes[u],g.nodes[v]),u*10+v,road,'asphalt'))
+        self.assertEqual(g.round_trip_nodes(1,avoid_major=True),{1,2})
+        with self.assertRaisesRegex(ValueError,'connected roads'):
+            plan(g,validate({'lat':0,'lon':0,'miles':10,'avoid_major':True}))
+
 
 class RestrictionTests(unittest.TestCase):
     def graph(self,restriction='no_right_turn',**tags):

@@ -22,7 +22,7 @@ def main():
         {'miles':30,'avoid_major':True},{'miles':10,'tolerance':5}]),
         ('Burlington','region-86dc3c4a39ee1d6e.osm.json.gz',44.4759,-73.2121,[
         {'miles':5},{'miles':10},{'miles':10,'hills':'avoid'},
-        {'miles':10,'hills':'seek'},{'miles':10,'avoid_major':True}])]
+        {'miles':10,'hills':'seek'},{'miles':10,'max_ascent':500},{'miles':10,'avoid_major':True}])]
     report={'created_at':datetime.now(timezone.utc).isoformat(),'python':platform.python_version(),
             'platform':platform.platform(),'cases':[]}
     for name,file,lat,lon,cases in groups:

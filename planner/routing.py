@@ -121,6 +121,14 @@ def plan(graph, prefs, cancelled=lambda: False):
         raise ValueError('Start is more than 1.5 km from a matching road. Choose a point inside the loaded region or import a closer OSM snapshot.')
     target = prefs['miles']*MILE
     tolerance = prefs.get('tolerance', 10)/100
+    snap_index = None
+    if prefs['strict'] or prefs.get('avoid_major'):
+        connected = graph.round_trip_nodes(start,prefs['strict'],prefs.get('avoid_major',False))
+        lengths = {e.key:e.length for n in connected for e in graph.adj[n]
+                   if e.v in connected and graph.edge_allowed(e,prefs['strict'],prefs.get('avoid_major',False))}
+        if sum(lengths.values()) < target*(1-tolerance)*.8:
+            raise ValueError(f'Your road filters leave only {sum(lengths.values())/MILE:.1f} miles of connected roads at this start, too little for this loop without excessive repetition. Move the start, shorten the ride, or relax the road filters.')
+        snap_index = graph.snap_index(prefs['strict'],prefs.get('avoid_major',False),connected)
     candidates, seen, costs = [], set(), {}
     searched = set()
     best_error = math.inf
@@ -133,7 +141,7 @@ def plan(graph, prefs, cancelled=lambda: False):
         for angle in (bearing, bearing+60):
             theta = math.radians(angle)
             point = offset(graph.nodes[start], radius*math.cos(theta), radius*math.sin(theta))
-            node, error = graph.nearest(point, prefs['strict'], prefs.get('avoid_major',False))
+            node, error = graph.nearest(point, prefs['strict'], prefs.get('avoid_major',False), index=snap_index)
             if error > radius*.45: return None
             anchors.append(node)
         identity = tuple(anchors)

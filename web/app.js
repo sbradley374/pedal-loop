@@ -24,6 +24,10 @@ function setMode() {
   const synthetic = $('mode').value === 'synthetic';
   if (tiles && map.hasLayer(tiles)) map.removeLayer(tiles);
   if (!synthetic) tiles.addTo(map);
+  if(coverageLayer) {
+    if(synthetic) map.removeLayer(coverageLayer);
+    else coverageLayer.addTo(map);
+  }
   $('source-badge').textContent = synthetic ? 'SYNTHETIC DEMO · INVENTED ROADS · DO NOT RIDE' : 'OSM ROAD SNAPSHOT · VERIFY BEFORE RIDING';
   $('hill-note').textContent = synthetic ? 'Synthetic elevations demonstrate hill weighting and the profile.' : info.source.elevation ? `Terrain estimates · about ${info.source.elevation.grid_spacing_m} m raster spacing. Bridges/tunnels may differ.` : 'No terrain loaded yet. Load roads + terrain here to enable hill-aware routing.';
   invalidate();
@@ -185,6 +189,7 @@ async function refreshInfo() {
 }
 async function loadRegion(regionId=null) {
   if (importing || $('generate').disabled || !$('planner').reportValidity()) return;
+  const previousRegion=activeRegion;
   importing=true; invalidate();
   $('load-region').disabled=true; $('generate').disabled=true; $('saved-region').disabled=true;
   $('region-status').textContent='Preparing roads and terrain…';
@@ -210,7 +215,7 @@ async function loadRegion(regionId=null) {
     }
     $('region-status').textContent=message;
     status('Region ready. Choose your settings, then find a loop.');
-  } catch(error) { $('region-status').textContent=error.message; }
+  } catch(error) { activeRegion=previousRegion; $('saved-region').value=previousRegion || ''; $('region-status').textContent=error.message; }
   finally { importing=false;$('load-region').disabled=!info?.region_import_enabled;$('generate').disabled=false;$('saved-region').disabled=false; }
 }
 
