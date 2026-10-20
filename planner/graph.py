@@ -31,6 +31,7 @@ class Edge:
     road: str = 'residential'
     surface: str = ''
     name: str = 'Unnamed road'
+    structure: str = ''
 
     @property
     def key(self):
@@ -47,28 +48,36 @@ class Graph:
         self.stops = set()
         self.metadata = {}
         self._spatial = {}
+        self.compact = None
+        self.restriction_nodes = set()
+        self.forbidden_turns = defaultdict(set)
+        self.only_turns = defaultdict(set)
 
     def add(self, edge):
         self._spatial.clear()
+        self.compact = None
         self.adj[edge.u].append(edge)
         self.neighbors[edge.u].add(edge.v)
         self.neighbors[edge.v].add(edge.u)
 
-    def nearest(self, point, strict=False):
+    def nearest(self, point, strict=False, avoid_major=False):
         # Local metre grid avoids repeatedly scanning hundreds of thousands of
         # shape nodes. Final candidate comparisons still use great-circle distance.
-        if strict not in self._spatial:
+        cache_key = (strict, avoid_major)
+        if cache_key not in self._spatial:
             scale = 111195 * math.cos(math.radians(next(iter(self.nodes.values()))[0])) if self.nodes else 111195
             cells = defaultdict(list)
             candidates = []
             for n, (lat, lon) in self.nodes.items():
-                if any(not strict or e.surface in PAVED for e in self.adj[n]):
+                if any((not strict or e.surface in PAVED) and
+                       (not avoid_major or e.road not in {'primary','primary_link','secondary','secondary_link'})
+                       for e in self.adj[n]):
                     cells[(math.floor(lon*scale/1000), math.floor(lat*111195/1000))].append(n)
                     candidates.append(n)
-            self._spatial[strict] = (scale, cells, candidates)
-        scale, cells, candidates = self._spatial[strict]
+            self._spatial[cache_key] = (scale, cells, candidates)
+        scale, cells, candidates = self._spatial[cache_key]
         if not candidates:
-            raise ValueError('No routable roads match the pavement filter in this dataset.')
+            raise ValueError('No routable roads match the road and pavement filters in this dataset.')
         x, y = point[1]*scale, point[0]*111195
         cx, cy = math.floor(x/1000), math.floor(y/1000)
         for radius in (0, 1, 2, 4, 8, 16, 32):
@@ -83,6 +92,13 @@ class Graph:
 
     def is_junction(self, node):
         return len(self.neighbors[node]) >= 3
+
+    def turn_allowed(self, node, incoming, outgoing):
+        if incoming is None:
+            return True
+        key = (node, incoming)
+        return (outgoing not in self.forbidden_turns.get(key, ()) and
+                (key not in self.only_turns or outgoing in self.only_turns[key]))
 
 
 def eligible(tags):
@@ -129,19 +145,45 @@ def from_osm(data):
         direction = tags.get('oneway:bicycle', tags.get('oneway', 'yes' if tags.get('junction') == 'roundabout' else 'no'))
         for u, v in zip(item['nodes'], item['nodes'][1:]):
             if u not in g.nodes or v not in g.nodes or u in blocked or v in blocked or u == v: continue
-            fields = dict(length=distance(g.nodes[u], g.nodes[v]), way=item['id'], road=tags['highway'], surface=tags.get('surface', ''), name=tags.get('name', 'Unnamed ' + tags['highway']))
+            fields = dict(length=distance(g.nodes[u], g.nodes[v]), way=item['id'], road=tags['highway'], surface=tags.get('surface', ''), name=tags.get('name', 'Unnamed ' + tags['highway']),
+                          structure='bridge' if tags.get('bridge') not in (None, 'no') else 'tunnel' if tags.get('tunnel') not in (None, 'no') else '')
             if direction != '-1': g.add(Edge(u, v, **fields))
             if direction not in {'yes', '1', 'true'}: g.add(Edge(v, u, **fields))
     g.nodes = {n: point for n, point in g.nodes.items() if n in g.neighbors}
     g.metadata = {'source': 'osm', 'label': 'OpenStreetMap road snapshot', 'timestamp': data.get('osm3s', {}).get('timestamp_osm_base', 'Unknown date'), **data.get('pedal_loop', {})}
+    supported = unsupported = 0
+    for item in data['elements']:
+        tags = item.get('tags', {})
+        if item['type'] != 'relation' or tags.get('type') != 'restriction':
+            continue
+        if 'bicycle' in tags.get('except', '').split(';'):
+            continue
+        restriction = tags.get('restriction:bicycle', tags.get('restriction', ''))
+        members = item.get('members', [])
+        via = [m['ref'] for m in members if m['role'] == 'via' and m['type'] == 'node']
+        before = [m['ref'] for m in members if m['role'] == 'from' and m['type'] == 'way']
+        after = [m['ref'] for m in members if m['role'] == 'to' and m['type'] == 'way']
+        # Same-way U-turns need direction-aware state, not just way IDs.
+        if (len(via) != 1 or len(before) != 1 or len(after) != 1 or
+                before == after or any(':conditional' in k for k in tags) or
+                not restriction.startswith(('no_', 'only_'))):
+            unsupported += 1
+            continue
+        g.restriction_nodes.add(via[0])
+        target = g.only_turns if restriction.startswith('only_') else g.forbidden_turns
+        target[(via[0], before[0])].add(after[0])
+        supported += 1
+    g.metadata['turn_restrictions'] = {'supported': supported, 'unsupported': unsupported,
+                                     'included_in_extract': bool(g.metadata.get('restrictions_requested'))}
     return g
 
 
 def load(path):
     opener = gzip.open if str(path).endswith('.gz') else open
     with opener(path, 'rt') as f: graph = from_osm(json.load(f))
-    from .elevation import attach
+    from .elevation import attach, fingerprint
     attach(graph,path)
+    graph.metadata['snapshot_sha256'] = fingerprint(path)
     return graph
 
 

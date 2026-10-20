@@ -1,6 +1,6 @@
 'use strict';
 const $ = id => document.getElementById(id);
-let map, marker, tiles, routeLayer, current, selectedIndex = 0, info, revision = 0, importing = false;
+let map, marker, tiles, routeLayer, current, selectedIndex = 0, info, revision = 0, importing = false, activeJob = null, activeRegion = null, cancelRequested = false, coverageLayer;
 const colors = ['#214e3f', '#cb764d', '#7786a5'];
 function status(message, error = false) { $('status').textContent = message; $('status').classList.toggle('error', error); }
 function updateLabels() {
@@ -9,6 +9,7 @@ function updateLabels() {
 }
 function invalidate() {
   revision++;
+  if (activeJob) cancelSearch();
   current = null;
   $('detail').hidden = true;
   $('routes').replaceChildren();
@@ -44,6 +45,7 @@ function selectRoute(index) {
   $('ascent').textContent = route.ascent_ft === null ? 'Unknown' : `${route.ascent_ft.toLocaleString()} ft`;
   $('junctions').textContent = route.junctions;
   $('unknown').textContent = `${route.unknown_surface_pct}%`;
+  $('road-summary').textContent = `${route.major_road_pct ?? '—'}% primary/secondary roads · ${route.structure_pct ?? '—'}% bridges/tunnels · ${route.distance_error_pct}% distance error`;
   $('gpx').href = `/api/gpx/${current.id}/${index}`;
   $('gpx').textContent = synthetic ? '↓ Demo GPX · do not ride' : '↓ Download GPX';
   $('descent').textContent = route.descent_ft === null ? 'Descent unavailable' : `↓ ${route.descent_ft.toLocaleString()} ft estimated descent`;
@@ -72,45 +74,100 @@ function selectRoute(index) {
     $('profile').style.display = 'none';
     $('profile-note').textContent = `UNAVAILABLE · ${route.elevation_coverage_pct}% SEGMENT COVERAGE`;
   }
-  const source = synthetic ? 'Invented roads and elevations. This export is for software testing, not navigation.' : `OSM snapshot: ${current.source.timestamp}. Traffic is inferred from road class, not measured traffic volume. Mapped stops are incomplete; junctions do not necessarily require stopping. Turn restrictions are not yet modeled.`;
+  const source = synthetic ? 'Invented roads and elevations. This export is for software testing, not navigation.' : `OSM snapshot: ${current.source.timestamp}. Traffic is inferred from road class, not measured traffic volume. Mapped stops are incomplete; junctions do not necessarily require stopping. Supported turn restrictions apply when included in the snapshot; complex restrictions and current conditions still need checking.`;
   $('confidence').textContent = `${source} ${route.mapped_stops} mapped stops/signals · ${route.repeated_pct}% repeated distance · ${route.distance_error_pct}% from requested distance. Start snapped ${current.snap_distance_m} m to the network; the connecting trip is not included. ${route.unknown_surface_pct}% of route length has no surface tag. ${!profile.length && current.preferences.hills !== 'neutral' ? 'Elevation is incomplete, so the hill preference cannot reliably rank these routes.' : ''} ${current.source.elevation ? 'Elevation is a terrain estimate, sampled bilinearly and smoothed for climb totals; bridges, tunnels, and raster errors can affect it.' : ''}`;
+}
+async function api(path, options) {
+  const response = await fetch(path, options);
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.error || 'Request failed.');
+  return result;
+}
+function renderResult(result, index=0) {
+  current = result;
+  $('routes').replaceChildren();
+  current.routes.forEach((r,i) => {
+    const button = document.createElement('button'); button.type = 'button'; button.className = 'route-card';
+    const name = document.createElement('span'); name.className='name'; name.textContent=`0${i+1} / ${r.name}`;
+    const miles = document.createElement('strong'); miles.textContent=r.distance_miles;
+    const unit = document.createElement('small'); unit.textContent='miles';
+    const sub = document.createElement('span'); sub.className='sub';
+    sub.textContent=`${r.ascent_ft === null ? 'Climb unknown' : '~'+r.ascent_ft.toLocaleString()+' ft climbing'} · ${r.major_road_pct ?? '—'}% major roads · ${r.distance_error_pct}% distance error`;
+    button.append(name,miles,unit,sub); button.addEventListener('click',()=>selectRoute(i)); $('routes').append(button);
+  });
+  $('map-title').textContent = result.source.source === 'synthetic' ? 'Try the planner. These roads are invented.' : 'Your way out. Your way back.';
+  status(`${result.routes.length} loop ${result.routes.length===1?'candidate':'alternatives'} for ${result.preferences.miles} miles. ${result.cached ? 'Reused a matching saved result.' : result.search ? `Search: ${result.search.seconds.toFixed(1)} seconds.` : ''} ${(result.warnings||[]).join(' ')}`);
+  selectRoute(Math.max(0,Math.min(result.routes.length-1,index))); fit();
+}
+async function cancelSearch() {
+  cancelRequested = true;
+  if (activeJob) {
+    try { await api(`/api/route-jobs/${activeJob}`,{method:'DELETE'}); }
+    catch(error) { status(`Cancellation could not be confirmed: ${error.message}`,true); }
+  }
 }
 async function generate(event) {
   event?.preventDefault();
-  if (importing) { status('Wait for the region import to finish before searching.'); return; }
+  if (importing || $('generate').disabled) return;
   if (!$('planner').reportValidity()) { status('Check the start coordinates and ride settings.',true); return; }
-  if ($('generate').disabled) return;
   const thisRevision = revision;
-  $('generate').disabled = true; $('load-region').disabled=true; $('saved-region').disabled=true; $('generate').textContent = 'Searching the road network…'; document.body.classList.add('busy');
-  current = null; $('detail').hidden = true; $('routes').replaceChildren(); routeLayer.clearLayers();
-  status('Searching loop candidates and comparing distance, road class, junctions, and backtracking…');
-  const payload = {mode:$('mode').value,lat:+$('lat').value,lon:+$('lon').value,miles:+$('miles').value,traffic:+$('traffic').value,stops:+$('stops').value,hills:$('hills').value,strict:$('strict').checked};
+  cancelRequested=false;
+  $('generate').disabled=true; $('load-region').disabled=true; $('saved-region').disabled=true;
+  $('cancel').hidden=false; $('generate').textContent='Finding your loop…'; document.body.classList.add('busy');
+  current=null; $('detail').hidden=true; $('routes').replaceChildren(); routeLayer.clearLayers();
+  status('Comparing loops within your distance and road preferences…');
+  const payload = {mode:$('mode').value, region_id:activeRegion, lat:+$('lat').value,lon:+$('lon').value,miles:+$('miles').value,traffic:+$('traffic').value,stops:+$('stops').value,hills:$('hills').value,strict:$('strict').checked,avoid_major:$('avoid-major').checked,tolerance:+$('tolerance').value,max_ascent:$('max-ascent').value===''?null:+$('max-ascent').value};
+  const started=performance.now();
   try {
-    const response = await fetch('/api/routes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    const result = await response.json();
-    if (thisRevision !== revision) { status('Settings changed during the search. Find a new loop with your latest preferences.'); return; }
-    if (!response.ok) throw new Error(result.error || 'Route search failed.');
-    current = result;
-    current.routes.forEach((r,i) => {
-      const button = document.createElement('button'); button.type = 'button'; button.className = 'route-card';
-      const name = document.createElement('span'); name.className='name'; name.textContent=`0${i+1} / ${r.name}`;
-      const miles = document.createElement('strong'); miles.textContent=r.distance_miles;
-      const unit = document.createElement('small'); unit.textContent='miles';
-      const sub = document.createElement('span'); sub.className='sub'; sub.textContent=`${r.ascent_ft === null ? 'Climb unknown' : '~'+r.ascent_ft.toLocaleString()+' ft climbing'} · ${r.unknown_surface_pct}% surface unknown`;
-      button.append(name,miles,unit,sub); button.addEventListener('click',()=>selectRoute(i)); $('routes').append(button);
-    });
-    $('map-title').textContent = result.source.source === 'synthetic' ? 'Try the planner. These roads are invented.' : 'Your way out. Your way back.';
-    status(`${result.routes.length} loop ${result.routes.length===1?'candidate':'alternatives'} found for your ${payload.miles}-mile ride. ${result.routes[0].distance_error_pct>15?'The closest match is well outside your target; try another distance or start.':'Select a route to explore it.'} ${(result.warnings||[]).join(' ')}`);
-    selectRoute(0); fit();
+    let job=await api('/api/route-jobs',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    activeJob=job.id;
+    if (cancelRequested || thisRevision!==revision) await cancelSearch();
+    while (['queued','running'].includes(job.status)) {
+      if (!cancelRequested) status(`${job.status==='queued'?'Waiting for a search worker':'Searching the road network'} · ${Math.round((performance.now()-started)/1000)} seconds. You can cancel or change settings.`);
+      await new Promise(resolve=>setTimeout(resolve,750));
+      job=await api(`/api/route-jobs/${activeJob}`);
+    }
+    if (job.status==='cancelled' || cancelRequested) { status('Search cancelled. Choose your settings and try again.'); return; }
+    if (job.status==='failed') throw new Error(job.error || 'Search failed.');
+    const result=await api(`/api/results/${job.result_id}`);
+    result.cached=job.cached;
+    if (thisRevision!==revision) { status('Settings changed. Find a new loop with your latest preferences.'); return; }
+    renderResult(result);
   } catch(error) { status(error.message,true); }
-  finally { $('load-region').disabled=!info?.region_import_enabled; $('saved-region').disabled=false; $('generate').disabled=false; $('generate').innerHTML='Find my loop <span>↗</span>'; document.body.classList.remove('busy'); }
+  finally {
+    activeJob=null; $('cancel').hidden=true; $('load-region').disabled=!info?.region_import_enabled;
+    $('saved-region').disabled=false; $('generate').disabled=false; $('generate').innerHTML='Find my loop <span>↗</span>'; document.body.classList.remove('busy');
+  }
+}
+function savedRides() {
+  try { const saved=JSON.parse(localStorage.getItem('pedal-loop-rides') || '[]'); return Array.isArray(saved)?saved:[]; }
+  catch { return []; }
+}
+function updateSaved() {
+  $('saved-rides').replaceChildren(new Option('Choose a saved ride',''));
+  savedRides().forEach(ride=>$('saved-rides').append(new Option(ride.label,`${ride.id}:${ride.index}`)));
+}
+async function openRide(id,index=0) {
+  if (activeJob || importing) return;
+  const result=await api(`/api/results/${encodeURIComponent(id)}`);
+  if(result.region_id) { activeRegion=result.region_id; await refreshInfo(); }
+  for(const name of ['lat','lon','miles','traffic','stops','hills','tolerance']) {
+    if(result.preferences[name]!==undefined) $(name).value=result.preferences[name];
+  }
+  $('strict').checked=result.preferences.strict; $('avoid-major').checked=!!result.preferences.avoid_major;
+  $('max-ascent').value=result.preferences.max_ascent ?? ''; $('place').value='custom';
+  $('mode').value=result.source.source==='synthetic'?'synthetic':'osm';
+  updateLabels(); updateStart(); setMode(); renderResult(result,index);
 }
 function fit() { if(current) map.fitBounds(L.latLngBounds(current.routes[selectedIndex].coordinates),{padding:[35,35]}); }
 
 async function refreshInfo() {
-  const response = await fetch('/api/info');
+  const response = await fetch('/api/info'+(activeRegion ? `?region_id=${encodeURIComponent(activeRegion)}` : ''));
   if (!response.ok) throw new Error('Cannot load road dataset information.');
   info = await response.json();
+  activeRegion=info.active_region;
+  if(coverageLayer) map.removeLayer(coverageLayer);
+  if(info.source.center && info.source.radius_m) coverageLayer=L.circle(info.source.center,{radius:info.source.radius_m,color:'#56743f',weight:1,dashArray:'6 6',fillOpacity:.025,interactive:false}).addTo(map);
   if (info.osm_available && !$('mode').querySelector('option[value="osm"]')) {
     const option = document.createElement('option'); option.value='osm'; option.textContent='OpenStreetMap · cached roads'; $('mode').prepend(option);
   }
@@ -134,22 +191,24 @@ async function loadRegion(regionId=null) {
   const lat=+$('lat').value, lon=+$('lon').value;
   const label=$('place').value==='custom' ? `${lat.toFixed(4)}, ${lon.toFixed(4)}` : $('place').selectedOptions[0].textContent;
   try {
-    const response=await fetch('/api/regions/load',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({lat,lon,miles:+$('miles').value,label, ...(regionId ? {region_id:regionId} : {})})});
-    let job=await response.json();if(!response.ok)throw new Error(job.error || 'Could not start region import.');
-    while(job.status==='running') {
-      $('region-status').textContent=job.message;
-      await new Promise(resolve=>setTimeout(resolve,1500));
-      const progress=await fetch(`/api/regions/jobs/${job.id}`);
-      if(!progress.ok)throw new Error('Lost import progress. Reload the page to inspect the active region.');
-      job=await progress.json();
+    let message='Cached region ready.';
+    if(regionId) { activeRegion=regionId; }
+    else {
+      let job=await api('/api/regions/load',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({lat,lon,miles:+$('miles').value,label})});
+      while(job.status==='running') {
+        $('region-status').textContent=job.message;
+        await new Promise(resolve=>setTimeout(resolve,1500));
+        job=await api(`/api/regions/jobs/${job.id}`);
+      }
+      if(job.status==='failed')throw new Error(job.message);
+      activeRegion=job.region_id; message=job.message;
     }
-    if(job.status==='failed')throw new Error(job.message);
     await refreshInfo();setMode();
     if(regionId && info.source.center) {
       [$('lat').value,$('lon').value]=info.source.center;
       $('place').value='custom';updateStart();map.setView(marker.getLatLng(),11);
     }
-    $('region-status').textContent=job.message;
+    $('region-status').textContent=message;
     status('Region ready. Choose your settings, then find a loop.');
   } catch(error) { $('region-status').textContent=error.message; }
   finally { importing=false;$('load-region').disabled=!info?.region_import_enabled;$('generate').disabled=false;$('saved-region').disabled=false; }
@@ -163,7 +222,31 @@ async function init() {
   routeLayer=L.layerGroup().addTo(map);
   map.on('click', e => { $('lat').value=e.latlng.lat.toFixed(6);$('lon').value=e.latlng.lng.toFixed(6);$('place').value='custom';invalidate();updateStart(); });
   $('planner').addEventListener('submit',generate);
-  $('generate').addEventListener('click',generate);
+  $('cancel').addEventListener('click',cancelSearch);
+  $('locate').addEventListener('click',()=>{
+    if(!navigator.geolocation) { status('Location is unavailable. Click the map to choose your start.',true); return; }
+    navigator.geolocation.getCurrentPosition(position=>{
+      $('lat').value=position.coords.latitude.toFixed(6); $('lon').value=position.coords.longitude.toFixed(6);
+      $('place').value='custom'; invalidate(); updateStart(); map.setView(marker.getLatLng(),12);
+    },()=>status('Could not get your location. Click the map or enter coordinates.',true),{timeout:10000});
+  });
+  updateSaved();
+  $('save-ride').addEventListener('click',()=>{
+    if(!current)return;
+    const ride=current.routes[selectedIndex];
+    const saved=[{id:current.id,index:selectedIndex,label:`${ride.distance_miles} mi · ${current.source.region_label || current.source.label} · ${new Date().toLocaleDateString()}`},...savedRides().filter(r=>r.id!==current.id || r.index!==selectedIndex)].slice(0,12);
+    try { localStorage.setItem('pedal-loop-rides',JSON.stringify(saved)); updateSaved(); status('Ride saved on this browser. Download GPX to keep it permanently.'); }
+    catch { status('Browser storage is unavailable. Download GPX to save this ride.',true); }
+  });
+  $('share-ride').addEventListener('click',async()=>{
+    if(!current)return;
+    const url=new URL(location.href); url.search=`ride=${current.id}&route=${selectedIndex}`;
+    try { await navigator.clipboard.writeText(url.href); status(location.hostname==='127.0.0.1' || location.hostname==='localhost' ? 'Link copied. This local server link only works on this computer. Share GPX with others.' : 'Link copied. Anyone with it can view the route until it expires.'); }
+    catch { status(`Ride link: ${url.href}`); }
+  });
+  $('saved-rides').addEventListener('change',()=>{
+    const [id,index]=$('saved-rides').value.split(':'); if(id) openRide(id,+index).catch(e=>status(e.message,true));
+  });
   $('planner').addEventListener('input',e => { if(['mode','place','saved-region'].includes(e.target.id))return; updateLabels();invalidate(); if(['lat','lon'].includes(e.target.id)){$('place').value='custom';updateStart();} });
   $('place').addEventListener('change',()=>{if($('place').value!=='custom'){[$('lat').value,$('lon').value]=$('place').value.split(',');updateStart();map.setView(marker.getLatLng(),11);}invalidate();});
   $('mode').addEventListener('change',setMode);
@@ -184,7 +267,10 @@ async function init() {
     }
     tiles=L.tileLayer(info.tile_url,{maxZoom:19,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'});
     let tileErrorShown=false;tiles.on('tileerror',()=>{if(!tileErrorShown){tileErrorShown=true;$('source-badge').textContent='BASEMAP UNAVAILABLE · ROUTE GEOMETRY STILL SHOWN';}});
-    setMode(); await generate();
+    setMode();
+    const params=new URLSearchParams(location.search);
+    if(params.get('ride')) await openRide(params.get('ride'),Number(params.get('route'))||0);
+    else status('Choose your start, distance, and road preferences. The dashed circle shows approximate loaded coverage.');
   } catch(error) { status(error.message,true); }
 }
 init();

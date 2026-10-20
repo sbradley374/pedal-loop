@@ -4,6 +4,9 @@ __pycache__/
 .DS_Store
 *.tmp
 data/terrain-cache/
+data/*.sqlite3*
+benchmark-results/
+.coverage
 
 # Local configuration and credentials.
 .env

@@ -1,0 +1,12 @@
+{
+  "description": "Candidate US validation regions. Entries are plans, not claims of downloaded or validated coverage. Imports remain capped at 30 km.",
+  "regions": [
+    {"id":"boulder","label":"Boulder, Colorado","lat":40.015,"lon":-105.2705,"miles":10,"terrain":"mountain foothills"},
+    {"id":"madison","label":"Madison, Wisconsin","lat":43.0731,"lon":-89.4012,"miles":10,"terrain":"lakes and urban paths"},
+    {"id":"portland","label":"Portland, Oregon","lat":45.5152,"lon":-122.6784,"miles":20,"terrain":"urban bridges and hills"},
+    {"id":"austin","label":"Austin, Texas","lat":30.2672,"lon":-97.7431,"miles":20,"terrain":"arterials and rolling hills"},
+    {"id":"minneapolis","label":"Minneapolis, Minnesota","lat":44.9778,"lon":-93.265,"miles":20,"terrain":"urban path network"},
+    {"id":"anchorage","label":"Anchorage, Alaska","lat":61.2181,"lon":-149.9003,"miles":10,"terrain":"high latitude"},
+    {"id":"honolulu","label":"Honolulu, Hawaii","lat":21.3099,"lon":-157.8581,"miles":10,"terrain":"island and mountains"}
+  ]
+}

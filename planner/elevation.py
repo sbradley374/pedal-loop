@@ -6,6 +6,7 @@ import gzip
 import hashlib
 import json
 import math
+from bisect import bisect_right
 from pathlib import Path
 from .network import fetch
 
@@ -107,7 +108,7 @@ def enrich(graph,path,cache,progress=lambda message:None):
     graph.elevation=values;graph.metadata['elevation']=metadata
 
 
-def profile_metrics(profile):
+def profile_metrics(profile, closed=False):
     """profile is ordered [distance metres, height metres]. No gaps interpolated."""
     if len(profile)<2 or any(y is None for x,y in profile):return None
     total=profile[-1][0]
@@ -119,10 +120,22 @@ def profile_metrics(profile):
         while index<len(profile)-2 and profile[index+1][0]<d:index+=1
         a,b=profile[index:index+2];fraction=(d-a[0])/max(.00001,b[0]-a[0])
         samples.append(a[1]+fraction*(b[1]-a[1]))
-    smoothed=[sum(samples[max(0,i-1):i+2])/len(samples[max(0,i-1):i+2]) for i in range(len(samples))]
+    closed = closed and abs(profile[0][1]-profile[-1][1]) < .00001 and len(samples)>3
+    if closed:
+        ring=samples[:-1]
+        smoothed=[(ring[(i-1)%len(ring)]+v+ring[(i+1)%len(ring)])/3 for i,v in enumerate(ring)]
+        smoothed.append(smoothed[0])
+    else:
+        smoothed=[sum(samples[max(0,i-1):i+2])/len(samples[max(0,i-1):i+2]) for i in range(len(samples))]
+    gain_samples=smoothed
+    if closed:
+        # Begin counting at the valley so a climb crossing the start isn't lost.
+        minimum=min(range(len(smoothed)-1),key=smoothed.__getitem__)
+        ring=smoothed[:-1]
+        gain_samples=ring[minimum:]+ring[:minimum]+[ring[minimum]]
     # Hysteresis counts full climbs/descents only after a >=3 m reversal.
-    anchor=extreme=smoothed[0];direction=0;up=down=0
-    for value in smoothed[1:]:
+    anchor=extreme=gain_samples[0];direction=0;up=down=0
+    for value in gain_samples[1:]:
         if direction==0:
             if abs(value-anchor)>=3:direction=1 if value>anchor else -1;extreme=value
         elif direction==1:
@@ -134,7 +147,13 @@ def profile_metrics(profile):
     if direction==1:up+=max(0,extreme-anchor)
     elif direction==-1:down+=max(0,anchor-extreme)
     # Approximate sustained grade over 150 m, not noisy adjacent shape nodes.
-    grades=[abs(smoothed[i]-smoothed[i-5])/max(1,distances[i]-distances[i-5])*100 for i in range(5,len(samples))]
+    grades=[]
+    for i,d in enumerate(distances):
+        if d<150:continue
+        before=d-150;j=max(0,bisect_right(distances,before)-1)
+        fraction=(before-distances[j])/max(.00001,distances[j+1]-distances[j])
+        height=smoothed[j]+fraction*(smoothed[j+1]-smoothed[j])
+        grades.append(abs(smoothed[i]-height)/150*100)
     return {'ascent_ft':round(up*3.28084),'descent_ft':round(down*3.28084),
             'max_grade_pct':round(max(grades,default=0),1),
             'profile':[[round(d/1609.344,4),round(y,1)] for d,y in zip(distances,smoothed)]}

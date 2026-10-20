@@ -1,0 +1,13 @@
+services:
+  pedal-loop:
+    build: .
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      PUBLIC_ORIGIN: "http://127.0.0.1:8000"
+      ALLOW_IMPORTS: "0"
+    volumes:
+      - road-data:/app/data
+    restart: unless-stopped
+volumes:
+  road-data:

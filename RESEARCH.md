@@ -33,3 +33,17 @@ The UI now supports explicit background regional imports, durable cached-region 
 Terrain is a proxy for road elevation: it does not encode bridge deck or tunnel geometry. Profiles and gain use spatial smoothing and a reversal threshold rather than accumulating every small change between shape nodes. The method is documented in the README, UI and sidecar metadata, and the source attribution is retained locally. Terrain source accuracy and age remain independent of the displayed raster spacing/retrieval date.
 
 The next elevation-specific improvements should be bridge/tunnel correction, calibration against known rides or authoritative road elevations, and a user-selected ascent range rather than only hill avoidance/preference. Address search, compact graphs and turn-restriction support remain separate next steps.
+
+## v0.3: measured speed, bounded routes, and hosted-beta foundation
+
+The implementation now contracts directed chains without simplifying exported geometry. Shape-point endpoints are split virtually for each search. Preference-weighted landmark distances ignore turn restrictions and repeated-road penalties, so they remain lower bounds for A*. Differential tests compare compressed and uncompressed weighted paths, including internal endpoints, one-way rings and turn restrictions.
+
+Search uses 24 initial anchor triangles and up to 16 distance-driven refinements. The requested tolerance is enforced using unrounded length. The optional ascent cap rejects unknown profiles. Primary/secondary road exclusion is an actual routing and snapping filter, not a stronger soft penalty. Traffic remains a road-class proxy; this does not estimate vehicle counts or certify quiet/safe roads.
+
+A pure-distance landmark experiment increased runtime on the Providence benchmark and was replaced by preference-weighted indexes. See `docs/benchmark-2026-10-20.json` for the final recorded matrix. Timings depend on hardware, graph/index warmth, and other load.
+
+New imports request restrictions; supported node-via restrictions are enforced across path segments and loop closure. Unsupported restrictions are counted and disclosed. Existing source snapshots and their original provenance remain unchanged. Ground elevation on bridges/tunnels is disclosed rather than replaced with fabricated heights. Closed profiles now smooth periodically and use valley-based gain counting.
+
+The UI uses asynchronous search jobs. A bounded in-process thread pool supports cancellation and avoids blocking HTTP requests, while SQLite retains results. This is a single-process beta architecture: it does not promise parallel CPU speed, durable jobs, or multi-instance coordination. The next infrastructure step is a shared queue and dedicated process workers, not more web threads.
+
+Hosted serving follows the [Waitress usage guide](https://docs.pylonsproject.org/projects/waitress/en/stable/usage.html) and [proxy configuration guidance](https://docs.pylonsproject.org/projects/waitress/en/stable/arguments.html). Browser tiles remain subject to the [OSM tile policy](https://operations.osmfoundation.org/policies/tiles/); no offline tile bulk downloading is added.

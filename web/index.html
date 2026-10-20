@@ -2,7 +2,7 @@
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#153e35"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><title>Pedal Loop — Take the long way home</title><link rel="stylesheet" href="/vendor/leaflet.css"><link rel="stylesheet" href="/style.css"><script defer src="/vendor/leaflet.js"></script><script defer src="/app.js"></script></head>
 <body>
-<header><a class="brand" href="/" aria-label="Pedal Loop home"><span class="brand-icon">↻</span> pedal loop<span class="tag">FIELD NOTES / 01</span></a><div class="header-right"><span class="dot"></span> <span id="region-heading">ROAD + TERRAIN EXPLORER</span> <span class="beta">MVP</span></div></header>
+<header><a class="brand" href="/" aria-label="Pedal Loop home"><span class="brand-icon">↻</span> pedal loop<span class="tag">FIELD NOTES / 01</span></a><div class="header-right"><span class="dot"></span> <span id="region-heading">ROAD + TERRAIN EXPLORER</span> <span class="beta">BETA</span></div></header>
 <main>
 <aside>
 <div class="eyebrow">LESS TRAFFIC. MORE RIDING.</div><h1>Take the long<br> way home.</h1><p class="intro">A loop worth getting out for.<br>Start here. Find your way back.</p>
@@ -10,15 +10,20 @@
 <label for="mode">Road data</label><select id="mode"><option value="synthetic">Synthetic offline demo</option></select>
 <label for="place">01 <span>Choose your start</span></label><select id="place"><option value="41.8268,-71.4025">Brown University · College Hill</option><option value="41.8240,-71.4128">Downtown Providence</option><option value="41.7739,-71.3705">East Bay Bike Path · Riverside</option><option value="42.3550,-71.0656">Boston Common · Massachusetts</option><option value="44.4759,-73.2121">Burlington · Vermont</option><option value="51.5074,-0.1278">Central London · UK</option><option value="custom">Custom coordinates / click map</option></select>
 <div class="coordinate-row"><div><label for="lat">Latitude</label><input id="lat" type="number" step="any" min="-85" max="85" value="41.8268" required></div><div><label for="lon">Longitude</label><input id="lon" type="number" step="any" min="-180" max="180" value="-71.4025" required></div></div>
+<button id="locate" class="region-button" type="button">◎ Use my location</button>
 <div class="region-tools"><label for="saved-region">Cached road regions</label><select id="saved-region"><option value="">No cached regions</option></select><button id="load-region" class="region-button" type="button">↓ Load roads + terrain here</button><p class="help" id="region-note">A download uses the selected start and ride distance. Cached regions work offline.</p><p id="region-status" class="help" role="status" aria-live="polite"></p></div>
 <div class="distance-label"><label for="miles">02 <span>How far?</span></label><output id="miles-value">30 <small>mi</small></output></div><input id="miles" type="range" min="5" max="75" value="30"><div class="range-ends"><span>5 miles</span><span>75 miles</span></div>
+<label for="tolerance">Distance tolerance</label><select id="tolerance"><option value="5">Within 5% · precise</option><option value="10" selected>Within 10% · balanced</option><option value="20">Within 20% · more flexibility</option><option value="30">Within 30% · sparse networks</option></select><p class="help">Every result must meet this limit. A tighter limit can return fewer routes.</p>
 <label>03 <span>Make it your ride</span></label>
 <div class="preference"><label for="traffic">Avoid busier roads</label><output id="traffic-value">High</output></div><input id="traffic" type="range" min="0" max="1" step="0.1" value="0.8">
+<label class="checkbox"><input id="avoid-major" type="checkbox"><span>Exclude primary and secondary roads</span></label><p class="help">A strict road-class filter, including their links. Other roads can still carry traffic.</p>
 <div class="preference"><label for="stops">Avoid stops & junctions</label><output id="stops-value">Medium</output></div><input id="stops" type="range" min="0" max="1" step="0.1" value="0.6">
 <label for="hills" class="small-label">Hills</label><select id="hills"><option value="neutral">Go with the terrain</option><option value="avoid">Prefer flatter roads</option><option value="seek">Prefer hills</option></select><p id="hill-note" class="help">Terrain-based estimates where available; bridges and tunnels can differ.</p>
+<label for="max-ascent">Estimated climbing limit (ft)</label><input id="max-ascent" type="number" min="0" max="30000" step="50" placeholder="No limit"><p class="help">Requires complete terrain coverage. Actual climbing may differ.</p>
 <label class="checkbox"><input id="strict" type="checkbox"><span>Only explicitly mapped paved surfaces</span></label><p class="help">Known unpaved roads are always excluded. Untagged surfaces are allowed unless you check this.</p>
 <button id="generate" type="submit">Find my loop <span>↗</span></button>
-</form><p class="fine-print">A planning aid, not a safety assessment. Check road access, surfaces, and conditions before riding.</p>
+<button id="cancel" class="region-button" type="button" hidden>Cancel search</button>
+</form><div class="saved-rides"><label for="saved-rides">Saved on this browser</label><select id="saved-rides"><option value="">Choose a saved ride</option></select><p class="help">Links last up to 30 days, subject to server capacity. Download GPX to keep a permanent copy.</p></div><p class="fine-print">A planning aid, not a safety assessment. Check road access, surfaces, and conditions before riding.</p>
 </aside>
 <section class="workspace" aria-label="Route results">
 <div class="map-heading"><div><span class="eyebrow">YOUR NEXT RIDE</span><h2 id="map-title">A little farther from the usual.</h2></div><button id="fit" class="text-button" type="button">↗ Fit route</button></div>
@@ -27,6 +32,8 @@
 <div id="routes" class="route-cards" aria-label="Route alternatives"></div>
 <section id="detail" hidden>
 <div class="detail-top"><div><span class="eyebrow">THE RIDE, AT A GLANCE</span><h2 id="route-title">Best match</h2></div><a id="gpx" class="download" download>↓ Download GPX</a></div>
+<div class="ride-actions"><button id="save-ride" class="region-button" type="button">☆ Save ride</button><button id="share-ride" class="region-button" type="button">↗ Copy ride link</button></div>
+<div class="road-summary" id="road-summary"></div>
 <div class="metrics"><div><strong id="distance">—</strong><span>distance</span></div><div><strong id="ascent">—</strong><span>elevation gain</span></div><div><strong id="junctions">—</strong><span>mapped junctions</span></div><div><strong id="unknown">—</strong><span>surface unknown</span></div></div>
 <div class="terrain-stats"><span id="descent"></span><span id="grade"></span><span id="terrain-source"></span></div>
 <div id="profile-wrap"><div class="profile-header"><span>ELEVATION PROFILE</span><span id="profile-note"></span></div><svg id="profile" viewBox="0 0 800 100" role="img" aria-label="Elevation profile"></svg></div>

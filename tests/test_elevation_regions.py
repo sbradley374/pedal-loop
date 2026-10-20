@@ -1,5 +1,6 @@
 import gzip
 import json
+import math
 from pathlib import Path
 import tempfile
 import time
@@ -52,6 +53,24 @@ class ElevationTests(unittest.TestCase):
             with self.assertRaises(ValueError):validate({'miles':miles})
         self.assertEqual(requested_radius(5),6000)
         self.assertEqual(requested_radius(75),30000)
+
+    def test_closed_profile_has_no_start_seam(self):
+        profile=[[i*30,100+30*math.sin(i*2*math.pi/40)] for i in range(41)]
+        result=profile_metrics(profile,closed=True)
+        self.assertEqual(result['profile'][0][1],result['profile'][-1][1])
+        self.assertEqual(result['ascent_ft'],result['descent_ft'])
+        reversed_profile=[[i*30,p[1]] for i,p in enumerate(reversed(profile))]
+        reversed_result=profile_metrics(reversed_profile,closed=True)
+        self.assertAlmostEqual(result['ascent_ft'],reversed_result['ascent_ft'],delta=1)
+
+    def test_shape_point_density_does_not_change_climb(self):
+        coarse=[[0,0],[300,30],[600,0]]
+        dense=[[i*10,i if i<=30 else 60-i] for i in range(61)]
+        self.assertEqual(profile_metrics(coarse),profile_metrics(dense))
+
+    def test_short_final_interval_does_not_inflate_grade(self):
+        result=profile_metrics([[0,0],[310,31]])
+        self.assertLessEqual(result['max_grade_pct'],10)
 
 
 class RegionTests(unittest.TestCase):
