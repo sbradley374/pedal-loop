@@ -4,6 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 from contextlib import closing
 import hashlib
 import json
+import logging
 from pathlib import Path
 import sqlite3
 import threading
@@ -123,6 +124,7 @@ class PlannerService:
                     del self.jobs[old_id]
 
         def work():
+            started = time.monotonic()
             try:
                 with self.lock: self.jobs[job_id]['status'] = 'running'
                 result = self.calculate(payload, event.is_set)
@@ -130,10 +132,15 @@ class PlannerService:
                     self.jobs[job_id].update(status='cancelled' if event.is_set() else 'complete',
                                             result_id=result['id'], cached=result.get('cached',False))
             except Exception as exc:
+                if not isinstance(exc, ValueError):
+                    logging.getLogger(__name__).exception('Unexpected route search failure')
                 with self.lock:
                     self.jobs[job_id].update(status='cancelled' if event.is_set() else 'failed',
                                             error=str(exc) if isinstance(exc, ValueError) else 'Search failed. Please try again.')
             finally:
+                with self.lock:
+                    outcome = self.jobs[job_id]['status']
+                logging.getLogger(__name__).info('route_job status=%s elapsed_seconds=%.3f', outcome, time.monotonic()-started)
                 self.slots.release()
         self.pool.submit(work)
         return self.job(job_id)

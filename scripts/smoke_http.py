@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Black-box checks against a running server, using cached regions only."""
 import argparse
+import base64
+import os
 import json
 from pathlib import Path
 import time
@@ -17,6 +19,9 @@ def main():
     def request(path,payload=None,method=None):
         data=json.dumps(payload).encode() if payload is not None else None
         req=urllib.request.Request(args.base+path,data=data,method=method,headers={'Content-Type':'application/json','Origin':args.base})
+        if os.environ.get('STAGING_USER') and os.environ.get('STAGING_PASSWORD'):
+            credentials=f"{os.environ['STAGING_USER']}:{os.environ['STAGING_PASSWORD']}"
+            req.add_header('Authorization','Basic '+base64.b64encode(credentials.encode()).decode())
         with urllib.request.urlopen(req,timeout=60) as response:
             body=response.read()
             return json.loads(body) if response.headers.get_content_type()=='application/json' else body

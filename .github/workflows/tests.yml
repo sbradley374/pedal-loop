@@ -35,6 +35,15 @@ jobs:
         run: |
           docker compose up --detach --force-recreate --wait --wait-timeout 180
           python scripts/smoke_http.py --base http://127.0.0.1:8000 --verify-result /tmp/pedal-loop-result
+      - name: Verify private staging access
+        env:
+          STAGING_USER: ci-test
+          STAGING_PASSWORD: disposable-ci-password
+        run: |
+          docker compose up --detach --force-recreate --wait --wait-timeout 180
+          test "$(curl --silent --output /dev/null --write-out '%{http_code}' http://127.0.0.1:8000/)" = 401
+          python scripts/smoke_http.py --base http://127.0.0.1:8000 --verify-result /tmp/pedal-loop-result
+          docker compose exec -T pedal-loop python scripts/backup_results.py --source /app/storage/routes.sqlite3 --output /tmp/routes-backup.sqlite3
       - name: Container logs
         if: always()
         run: docker compose logs --no-color

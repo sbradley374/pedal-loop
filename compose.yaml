@@ -6,8 +6,11 @@ services:
     environment:
       PUBLIC_ORIGIN: "http://127.0.0.1:8000"
       ALLOW_IMPORTS: "0"
+      DATA_DIR: "/app/storage"
+      STAGING_USER: "${STAGING_USER:-}"
+      STAGING_PASSWORD: "${STAGING_PASSWORD:-}"
     volumes:
-      - road-data:/app/data
+      - road-data:/app/storage
     restart: unless-stopped
 volumes:
   road-data:

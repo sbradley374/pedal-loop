@@ -14,11 +14,11 @@
 ## Release gates not yet satisfied
 
 - No hosted URL or hosting account has been provisioned. Docker build/run and container-recreation checks passed in GitHub Actions run 39495796695. Local Waitress restart persistence passed.
-- Browser/mobile visual/interactivity audit remains incomplete: Arc automation loses content even on the script-free health JSON response after pressing Tab; Safari control timed out. Eight frontend tests cover saved-ride loading races and cached-region selection.
+- Safari desktop generation, alternative selection, save/copy/export and visual layout passed; the 390-pixel form preview passed. Mobile results and remaining flows still need verification (see QA report).
 - No national data preload or nationwide route validation has been completed. Providence/Burlington are bundled. A deliberate Boulder retry succeeded locally with roads/terrain and four passing benchmark scenarios; the 9 km snapshot is not bundled in Git. Madison remains unimported. Local-rider review is still required.
 - No traffic-volume feed, live closures, full access-rule interpreter, via-way/conditional/same-way turn restrictions, or bridge-deck elevation correction.
 - No elevation calibration against surveyed roads or recorded rides. Climbing remains a terrain estimate.
-- No production concurrency/load test or long-running operations/backup audit.
+- Local bounded concurrency test completed: six uncached searches took 17.5–39.7 seconds, two excess requests rejected, health checks responsive, peak RSS ~834 MiB. Hosted load, alerts, off-site backups and recovery drills remain open.
 
 ## Next recommended milestones
 
