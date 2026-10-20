@@ -13,8 +13,8 @@
 
 ## Release gates not yet satisfied
 
-- No hosted URL or hosting account has been provisioned. Docker packaging needs a build/run check on a Docker-capable host.
-- No browser visual/interactivity audit was possible with the available browser connection.
+- No hosted URL or hosting account has been provisioned. Docker build/run and container-recreation checks are now configured in CI; their remote result remains unverified. Local Waitress restart persistence passed.
+- Browser/mobile visual/interactivity audit remains incomplete: Arc loads the controls, but native automation repeatedly loses page content on interaction. Five frontend concurrency tests cover saved-ride loading races.
 - No national data preload or nationwide route validation has been completed. Providence/Burlington are bundled. The proposed Boulder/Madison download batch stopped on an Overpass HTTP 502 at its first region; no successful new-region coverage is claimed.
 - No traffic-volume feed, live closures, full access-rule interpreter, via-way/conditional/same-way turn restrictions, or bridge-deck elevation correction.
 - No elevation calibration against surveyed roads or recorded rides. Climbing remains a terrain estimate.

@@ -53,4 +53,4 @@ Back up the volume using a SQLite-aware backup or while the app is stopped. Do n
 - Load-test expected concurrency and record latency, queue rejection rate, memory, and disk use. Set up uptime/error monitoring and backups.
 - Add authentication and user-owned rides before promising private accounts. Add a shared queue and process workers before scaling replicas.
 
-Docker is packaged but was not built in the development environment because Docker was not installed. Browser visual verification also requires an available browser connection. See the roadmap for the remaining release work.
+The CI `container` job builds and starts Compose, checks routing/export/cancellation, recreates the container with the same volume, and checks saved-ride persistence. Its remote result still needs verification. Docker is unavailable in the local development environment. Local Waitress restart persistence has passed. Browser/mobile interaction QA remains incomplete because native Arc interaction repeatedly lost page content. See the roadmap for the remaining release work.

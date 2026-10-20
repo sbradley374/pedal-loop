@@ -114,7 +114,7 @@ async function generate(event) {
   event?.preventDefault();
   if (importing || $('generate').disabled) return;
   if (!$('planner').reportValidity()) { status('Check the start coordinates and ride settings.',true); return; }
-  const thisRevision = revision;
+  const thisRevision = ++revision;
   cancelRequested=false;
   $('generate').disabled=true; $('load-region').disabled=true; $('saved-region').disabled=true;
   $('cancel').hidden=false; $('generate').textContent='Finding your loop…'; document.body.classList.add('busy');
@@ -152,23 +152,33 @@ function updateSaved() {
   savedRides().forEach(ride=>$('saved-rides').append(new Option(ride.label,`${ride.id}:${ride.index}`)));
 }
 async function openRide(id,index=0) {
-  if (activeJob || importing) return;
-  const result=await api(`/api/results/${encodeURIComponent(id)}`);
-  if(result.region_id) { activeRegion=result.region_id; await refreshInfo(); }
-  for(const name of ['lat','lon','miles','traffic','stops','hills','tolerance']) {
-    if(result.preferences[name]!==undefined) $(name).value=result.preferences[name];
+  if ($('generate').disabled || importing) return;
+  const thisRevision=++revision;
+  const isCurrent=()=>thisRevision===revision;
+  status('Loading saved ride…');
+  try {
+    const result=await api(`/api/results/${encodeURIComponent(id)}`);
+    if(!isCurrent()) return;
+    if(result.region_id && !await refreshInfo(result.region_id,isCurrent)) return;
+    for(const name of ['lat','lon','miles','traffic','stops','hills','tolerance']) {
+      if(result.preferences[name]!==undefined) $(name).value=result.preferences[name];
+    }
+    $('strict').checked=result.preferences.strict; $('avoid-major').checked=!!result.preferences.avoid_major;
+    $('max-ascent').value=result.preferences.max_ascent ?? ''; $('place').value='custom';
+    $('mode').value=result.source.source==='synthetic'?'synthetic':'osm';
+    updateLabels(); updateStart(); setMode(); renderResult(result,index);
+  } catch(error) {
+    if(isCurrent()) status(error.message,true);
   }
-  $('strict').checked=result.preferences.strict; $('avoid-major').checked=!!result.preferences.avoid_major;
-  $('max-ascent').value=result.preferences.max_ascent ?? ''; $('place').value='custom';
-  $('mode').value=result.source.source==='synthetic'?'synthetic':'osm';
-  updateLabels(); updateStart(); setMode(); renderResult(result,index);
 }
 function fit() { if(current) map.fitBounds(L.latLngBounds(current.routes[selectedIndex].coordinates),{padding:[35,35]}); }
 
-async function refreshInfo() {
-  const response = await fetch('/api/info'+(activeRegion ? `?region_id=${encodeURIComponent(activeRegion)}` : ''));
+async function refreshInfo(regionId=activeRegion, isCurrent=()=>true) {
+  const response = await fetch('/api/info'+(regionId ? `?region_id=${encodeURIComponent(regionId)}` : ''));
   if (!response.ok) throw new Error('Cannot load road dataset information.');
-  info = await response.json();
+  const nextInfo = await response.json();
+  if(!isCurrent()) return false;
+  info = nextInfo;
   activeRegion=info.active_region;
   if(coverageLayer) map.removeLayer(coverageLayer);
   if(info.source.center && info.source.radius_m) coverageLayer=L.circle(info.source.center,{radius:info.source.radius_m,color:'#56743f',weight:1,dashArray:'6 6',fillOpacity:.025,interactive:false}).addTo(map);
@@ -186,6 +196,7 @@ async function refreshInfo() {
   $('load-region').disabled=!info.region_import_enabled;
   const active=info.regions.find(r=>r.id===info.active_region);
   $('region-note').textContent=active ? `Loaded: ${active.label}, ${Math.round(active.radius_m/1000)} km radius. New downloads send the selected region to OSM and AWS. Cached regions work offline.` : 'Load a region around your start. Downloads send the selected region to OSM and AWS.';
+  return true;
 }
 async function loadRegion(regionId=null) {
   if (importing || $('generate').disabled || !$('planner').reportValidity()) return;
