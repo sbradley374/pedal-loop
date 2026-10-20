@@ -1,5 +1,5 @@
 {
-  "created_at": "2026-10-20T18:23:54.390137+00:00",
+  "created_at": "2026-10-20T20:14:49.907537+00:00",
   "python": "3.9.13",
   "platform": "macOS-26.7.1-arm64-arm-64bit",
   "cases": [
@@ -18,7 +18,7 @@
         "strict": false
       },
       "snapshot_sha256": "bd625133fa5f715dfa8124855c809098c9630302b4e95350533d02708598c607",
-      "graph_load_seconds": 3.967,
+      "graph_load_seconds": 4.091,
       "first_search_in_region": true,
       "routes": [
         {
@@ -57,12 +57,12 @@
       ],
       "status": "ok",
       "search": {
-        "seconds": 8.963,
+        "seconds": 8.881,
         "candidates_tried": 34,
         "road_nodes": 295998,
         "search_nodes": 55809
       },
-      "elapsed_seconds": 8.994
+      "elapsed_seconds": 8.908
     },
     {
       "region": "Providence",
@@ -79,7 +79,7 @@
         "strict": false
       },
       "snapshot_sha256": "bd625133fa5f715dfa8124855c809098c9630302b4e95350533d02708598c607",
-      "graph_load_seconds": 3.967,
+      "graph_load_seconds": 4.091,
       "first_search_in_region": false,
       "routes": [
         {
@@ -118,12 +118,12 @@
       ],
       "status": "ok",
       "search": {
-        "seconds": 5.811,
+        "seconds": 5.571,
         "candidates_tried": 32,
         "road_nodes": 295998,
         "search_nodes": 55809
       },
-      "elapsed_seconds": 5.845
+      "elapsed_seconds": 5.603
     },
     {
       "region": "Providence",
@@ -140,7 +140,7 @@
         "strict": false
       },
       "snapshot_sha256": "bd625133fa5f715dfa8124855c809098c9630302b4e95350533d02708598c607",
-      "graph_load_seconds": 3.967,
+      "graph_load_seconds": 4.091,
       "first_search_in_region": false,
       "routes": [
         {
@@ -179,12 +179,12 @@
       ],
       "status": "ok",
       "search": {
-        "seconds": 7.375,
+        "seconds": 7.016,
         "candidates_tried": 29,
         "road_nodes": 295998,
         "search_nodes": 55809
       },
-      "elapsed_seconds": 7.413
+      "elapsed_seconds": 7.051
     },
     {
       "region": "Providence",
@@ -201,7 +201,7 @@
         "strict": false
       },
       "snapshot_sha256": "bd625133fa5f715dfa8124855c809098c9630302b4e95350533d02708598c607",
-      "graph_load_seconds": 3.967,
+      "graph_load_seconds": 4.091,
       "first_search_in_region": false,
       "routes": [
         {
@@ -240,12 +240,12 @@
       ],
       "status": "ok",
       "search": {
-        "seconds": 6.978,
+        "seconds": 6.655,
         "candidates_tried": 32,
         "road_nodes": 295998,
         "search_nodes": 55809
       },
-      "elapsed_seconds": 7.016
+      "elapsed_seconds": 6.689
     },
     {
       "region": "Providence",
@@ -262,11 +262,11 @@
         "strict": false
       },
       "snapshot_sha256": "bd625133fa5f715dfa8124855c809098c9630302b4e95350533d02708598c607",
-      "graph_load_seconds": 3.967,
+      "graph_load_seconds": 4.091,
       "first_search_in_region": false,
       "status": "no_match",
       "error": "No suitable loop within \u00b110% of your distance. Try a wider tolerance, another start, or less restrictive road filters.",
-      "elapsed_seconds": 1.34
+      "elapsed_seconds": 0.347
     },
     {
       "region": "Providence",
@@ -283,7 +283,7 @@
         "strict": false
       },
       "snapshot_sha256": "bd625133fa5f715dfa8124855c809098c9630302b4e95350533d02708598c607",
-      "graph_load_seconds": 3.967,
+      "graph_load_seconds": 4.091,
       "first_search_in_region": false,
       "routes": [
         {
@@ -322,12 +322,12 @@
       ],
       "status": "ok",
       "search": {
-        "seconds": 4.964,
+        "seconds": 3.317,
         "candidates_tried": 36,
         "road_nodes": 295998,
         "search_nodes": 55809
       },
-      "elapsed_seconds": 4.991
+      "elapsed_seconds": 3.342
     },
     {
       "region": "Burlington",
@@ -344,7 +344,7 @@
         "strict": false
       },
       "snapshot_sha256": "05bc2101b1f5e8a5e9bed5bc4070fac7dcd7510c0439bef59c578b9957c9e400",
-      "graph_load_seconds": 0.659,
+      "graph_load_seconds": 0.642,
       "first_search_in_region": true,
       "routes": [
         {
@@ -383,12 +383,12 @@
       ],
       "status": "ok",
       "search": {
-        "seconds": 1.052,
+        "seconds": 0.938,
         "candidates_tried": 26,
         "road_nodes": 51598,
         "search_nodes": 8756
       },
-      "elapsed_seconds": 1.059
+      "elapsed_seconds": 0.944
     },
     {
       "region": "Burlington",
@@ -405,7 +405,7 @@
         "strict": false
       },
       "snapshot_sha256": "05bc2101b1f5e8a5e9bed5bc4070fac7dcd7510c0439bef59c578b9957c9e400",
-      "graph_load_seconds": 0.659,
+      "graph_load_seconds": 0.642,
       "first_search_in_region": false,
       "routes": [
         {
@@ -444,12 +444,12 @@
       ],
       "status": "ok",
       "search": {
-        "seconds": 0.861,
+        "seconds": 0.823,
         "candidates_tried": 25,
         "road_nodes": 51598,
         "search_nodes": 8756
       },
-      "elapsed_seconds": 0.868
+      "elapsed_seconds": 0.829
     },
     {
       "region": "Burlington",
@@ -466,7 +466,7 @@
         "strict": false
       },
       "snapshot_sha256": "05bc2101b1f5e8a5e9bed5bc4070fac7dcd7510c0439bef59c578b9957c9e400",
-      "graph_load_seconds": 0.659,
+      "graph_load_seconds": 0.642,
       "first_search_in_region": false,
       "routes": [
         {
@@ -505,12 +505,12 @@
       ],
       "status": "ok",
       "search": {
-        "seconds": 1.163,
+        "seconds": 1.041,
         "candidates_tried": 24,
         "road_nodes": 51598,
         "search_nodes": 8756
       },
-      "elapsed_seconds": 1.169
+      "elapsed_seconds": 1.047
     },
     {
       "region": "Burlington",
@@ -527,7 +527,7 @@
         "strict": false
       },
       "snapshot_sha256": "05bc2101b1f5e8a5e9bed5bc4070fac7dcd7510c0439bef59c578b9957c9e400",
-      "graph_load_seconds": 0.659,
+      "graph_load_seconds": 0.642,
       "first_search_in_region": false,
       "routes": [
         {
@@ -566,12 +566,74 @@
       ],
       "status": "ok",
       "search": {
-        "seconds": 1.109,
+        "seconds": 1.027,
         "candidates_tried": 25,
         "road_nodes": 51598,
         "search_nodes": 8756
       },
-      "elapsed_seconds": 1.116
+      "elapsed_seconds": 1.033
+    },
+    {
+      "region": "Burlington",
+      "preferences": {
+        "max_ascent": 500.0,
+        "avoid_major": false,
+        "tolerance": 10.0,
+        "lat": 44.4759,
+        "lon": -73.2121,
+        "miles": 10.0,
+        "traffic": 0.8,
+        "stops": 0.6,
+        "hills": "neutral",
+        "strict": false
+      },
+      "snapshot_sha256": "05bc2101b1f5e8a5e9bed5bc4070fac7dcd7510c0439bef59c578b9957c9e400",
+      "graph_load_seconds": 0.571,
+      "first_search_in_region": true,
+      "status": "ok",
+      "elapsed_seconds": 1.372,
+      "search": {
+        "seconds": 1.368,
+        "candidates_tried": 24,
+        "road_nodes": 51598,
+        "search_nodes": 8756
+      },
+      "measured_at": "2026-10-20T20:36:32.386954+00:00",
+      "routes": [
+        {
+          "distance_miles": 10.6,
+          "distance_error_pct": 6,
+          "major_road_pct": 16.0,
+          "traffic_proxy": 21,
+          "ascent_ft": 479,
+          "descent_ft": 479,
+          "max_grade_pct": 8.1,
+          "unknown_surface_pct": 7.1,
+          "repeated_pct": 0.6
+        },
+        {
+          "distance_miles": 9.4,
+          "distance_error_pct": 6,
+          "major_road_pct": 15.5,
+          "traffic_proxy": 24,
+          "ascent_ft": 473,
+          "descent_ft": 473,
+          "max_grade_pct": 10.3,
+          "unknown_surface_pct": 4.0,
+          "repeated_pct": 2.7
+        },
+        {
+          "distance_miles": 10.8,
+          "distance_error_pct": 8,
+          "major_road_pct": 38.5,
+          "traffic_proxy": 39,
+          "ascent_ft": 484,
+          "descent_ft": 484,
+          "max_grade_pct": 10.7,
+          "unknown_surface_pct": 4.3,
+          "repeated_pct": 1.3
+        }
+      ]
     },
     {
       "region": "Burlington",
@@ -588,11 +650,11 @@
         "strict": false
       },
       "snapshot_sha256": "05bc2101b1f5e8a5e9bed5bc4070fac7dcd7510c0439bef59c578b9957c9e400",
-      "graph_load_seconds": 0.659,
+      "graph_load_seconds": 0.642,
       "first_search_in_region": false,
       "status": "no_match",
-      "error": "No suitable loop within \u00b110% of your distance. Try a wider tolerance, another start, or less restrictive road filters.",
-      "elapsed_seconds": 0.26
+      "error": "Your road filters leave only 0.1 miles of connected roads at this start, too little for this loop without excessive repetition. Move the start, shorten the ride, or relax the road filters.",
+      "elapsed_seconds": 0.041
     }
   ]
 }

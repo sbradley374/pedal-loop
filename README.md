@@ -6,7 +6,7 @@ A local road-cycling loop planner with real OpenStreetMap roads, terrain elevati
 
 - Lossless directed road-chain compression and preference-weighted landmark A* reduce repeated searches over shape points. Full road geometry and distance are retained.
 - Adaptive distance refinement with a hard, user-selected tolerance (default ±10%, UI choices 5/10/20/30%). No silent relaxation.
-- Strict exclusion of primary/secondary roads, visible major-road percentages, and an optional estimated climbing limit.
+- Strict exclusion of primary/secondary roads, visible major-road percentages, and an optional estimated climbing limit. With a neutral hill preference, a climbing limit also steers the candidate search toward flatter roads.
 - Supported node-via turn restrictions in new regional imports, including bicycle exceptions and restrictions across loop legs. Complex/via-way/conditional/same-way restrictions remain explicitly unsupported. Bundled snapshots predate restriction imports.
 - Background route jobs, cancellation, bounded queues, reusable results, and per-request region selection.
 - Persistent GPX/result links, saved rides on this browser, copyable unlisted links, location selection, and an approximate coverage circle.
@@ -33,7 +33,7 @@ On Windows activate with `.venv\Scripts\activate`. The app binds only to your co
 
 ## Plan a ride anywhere the data supports
 
-1. Choose a preset, enter latitude/longitude, or click the map. Providence, Boston, Burlington and London are convenient starting presets; **a preset does not mean its roads have already been downloaded**.
+1. Choose a preset, enter latitude/longitude, or click the map. Presets and **Use my location** select a matching cached region when one is available, preserving your chosen point. Providence, Boston, Burlington and London are convenient starting presets; **a preset does not mean its roads have already been downloaded**.
 2. Set the desired distance (5–75 miles), traffic/stop preferences, and hill preference.
 3. For a new place, click **Load roads + terrain here**. Progress appears under the button. The regional radius is estimated from the chosen distance, capped at 30 km for this local prototype. The download may take several minutes or fail if the public provider is busy.
 4. Click **Find my loop**. Choose an alternative, compare climbing estimates, inspect the profile, and download GPX. Move over the profile for distance/elevation readings.
@@ -76,6 +76,8 @@ Use the same region-and-terrain pipeline as the UI:
 ```sh
 python scripts/prepare_region.py --lat 44.4759 --lon -73.2121 --miles 10 --label "Burlington, Vermont"
 ```
+
+The development machine also has a locally imported 9 km Boulder region, with four passing software benchmark scenarios in `docs/benchmark-boulder-2026-10-20.json`. It is Git-ignored and is not included in fresh clones or guaranteed in hosted deployments. To prepare it elsewhere, run `python scripts/prepare_regions.py --only boulder --download`.
 
 Restart the app to discover a region prepared by a separate CLI process. In-app imports require no restart. On startup the default region is Providence; other regions remain in the cache selector. Each request identifies its own region; switching in one browser does not switch another browser’s roads.
 

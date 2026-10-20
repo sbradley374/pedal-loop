@@ -16,4 +16,28 @@ jobs:
       - run: python -m pip install -r requirements-hosted.txt
       - run: python -m unittest discover -s tests -v
       - run: node --check web/app.js
+      - run: node --test tests/frontend/*.test.cjs
       - run: python -m compileall -q app.py serve.py planner scripts
+
+  container:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build and start the hosted app
+        run: docker compose up --build --detach --wait --wait-timeout 180
+      - name: Check routing, cancellation, cache, and export
+        run: python scripts/smoke_http.py --base http://127.0.0.1:8000 --result-file /tmp/pedal-loop-result
+      - name: Recreate container and verify persistent rides
+        run: |
+          docker compose up --detach --force-recreate --wait --wait-timeout 180
+          python scripts/smoke_http.py --base http://127.0.0.1:8000 --verify-result /tmp/pedal-loop-result
+      - name: Container logs
+        if: always()
+        run: docker compose logs --no-color
+      - name: Remove CI containers and test volume
+        if: always()
+        run: docker compose down --volumes

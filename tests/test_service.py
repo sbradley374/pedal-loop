@@ -86,11 +86,17 @@ class ServiceTests(unittest.TestCase):
     def test_distance_and_ascent_limits_are_hard_constraints(self):
         result=plan(demo(),validate({'miles':20,'tolerance':5}))
         self.assertTrue(all(r['distance_error_pct']<=5 for r in result['routes']))
+        limited=plan(demo(),validate({'miles':5,'max_ascent':500}))
+        self.assertTrue(all(r['ascent_ft'] is not None and r['ascent_ft']<=500 for r in limited['routes']))
         with self.assertRaisesRegex(ValueError,'climbing limit'):
             plan(demo(),validate({'max_ascent':0}))
     def test_input_types_are_rejected_cleanly(self):
         for payload in ({'hills':[]},{'miles':True},{'mode':[]},{'region_id':[]},{'avoid_major':'yes'},{'max_ascent':-1},{'tolerance':2}):
             with self.assertRaises(ValueError):self.service.validate_request(payload)
+    def test_forced_demo_cannot_select_real_regions(self):
+        self.assertEqual(self.service.info()['regions'],[])
+        with self.assertRaisesRegex(ValueError,'synthetic'):
+            self.service.info('some-real-region')
 
 
 class WSGITests(unittest.TestCase):

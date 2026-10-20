@@ -1,0 +1,216 @@
+{
+  "created_at": "2026-10-20T21:06:24.289302+00:00",
+  "region": "Boulder, Colorado",
+  "file": "region-545e35694e9da76e.osm.json.gz",
+  "source": {
+    "source": "osm",
+    "label": "OpenStreetMap road snapshot",
+    "timestamp": "2026-10-20T21:02:08Z",
+    "center": [
+      40.015,
+      -105.2705
+    ],
+    "radius_m": 9000,
+    "endpoint": "https://overpass-api.de/api/interpreter",
+    "restrictions_requested": true,
+    "region_label": "Boulder, Colorado",
+    "turn_restrictions": {
+      "supported": 204,
+      "unsupported": 111,
+      "included_in_extract": true
+    },
+    "elevation": {
+      "provider": "Mapzen Terrain Tiles / AWS Open Data",
+      "kind": "terrain",
+      "zoom": 12,
+      "grid_spacing_m": 29.3,
+      "accessed_at": "2026-10-20T21:05:55.594841+00:00",
+      "attribution_url": "https://github.com/tilezen/joerd/blob/master/docs/attribution.md",
+      "source_url": "https://registry.opendata.aws/terrain-tiles/",
+      "method": "Bilinear terrain sampling; climb totals use 30 m resampling, a 90 m moving mean, and 3 m reversal threshold. Terrain can differ from bridge/tunnel riding surfaces."
+    },
+    "snapshot_sha256": "d66f0a128e9cdc89160f14b440850c4f922188d8c6fc1e9eeb514aafd654057f"
+  },
+  "cases": [
+    {
+      "preferences": {
+        "max_ascent": null,
+        "avoid_major": false,
+        "tolerance": 10.0,
+        "lat": 40.015,
+        "lon": -105.2705,
+        "miles": 5.0,
+        "traffic": 0.8,
+        "stops": 0.6,
+        "hills": "neutral",
+        "strict": false
+      },
+      "status": "ok",
+      "routes": [
+        {
+          "distance_miles": 5.0,
+          "ascent_ft": 254,
+          "descent_ft": 254,
+          "major_road_pct": 4.3,
+          "distance_error_pct": 0,
+          "repeated_pct": 0.3,
+          "unknown_surface_pct": 7.7
+        },
+        {
+          "distance_miles": 5.1,
+          "ascent_ft": 71,
+          "descent_ft": 71,
+          "major_road_pct": 2.6,
+          "distance_error_pct": 1,
+          "repeated_pct": 0.0,
+          "unknown_surface_pct": 4.6
+        },
+        {
+          "distance_miles": 5.0,
+          "ascent_ft": 184,
+          "descent_ft": 184,
+          "major_road_pct": 0.6,
+          "distance_error_pct": 1,
+          "repeated_pct": 0.0,
+          "unknown_surface_pct": 6.9
+        }
+      ],
+      "seconds": 1.353
+    },
+    {
+      "preferences": {
+        "max_ascent": null,
+        "avoid_major": false,
+        "tolerance": 10.0,
+        "lat": 40.015,
+        "lon": -105.2705,
+        "miles": 10.0,
+        "traffic": 0.8,
+        "stops": 0.6,
+        "hills": "neutral",
+        "strict": false
+      },
+      "status": "ok",
+      "routes": [
+        {
+          "distance_miles": 10.0,
+          "ascent_ft": 317,
+          "descent_ft": 317,
+          "major_road_pct": 1.5,
+          "distance_error_pct": 0,
+          "repeated_pct": 0.6,
+          "unknown_surface_pct": 8.1
+        },
+        {
+          "distance_miles": 9.6,
+          "ascent_ft": 179,
+          "descent_ft": 179,
+          "major_road_pct": 0.3,
+          "distance_error_pct": 4,
+          "repeated_pct": 0.0,
+          "unknown_surface_pct": 1.3
+        },
+        {
+          "distance_miles": 9.8,
+          "ascent_ft": 556,
+          "descent_ft": 556,
+          "major_road_pct": 0.9,
+          "distance_error_pct": 2,
+          "repeated_pct": 1.6,
+          "unknown_surface_pct": 5.4
+        }
+      ],
+      "seconds": 1.277
+    },
+    {
+      "preferences": {
+        "max_ascent": null,
+        "avoid_major": false,
+        "tolerance": 10.0,
+        "lat": 40.015,
+        "lon": -105.2705,
+        "miles": 10.0,
+        "traffic": 0.0,
+        "stops": 0.6,
+        "hills": "neutral",
+        "strict": false
+      },
+      "status": "ok",
+      "routes": [
+        {
+          "distance_miles": 10.0,
+          "ascent_ft": 317,
+          "descent_ft": 317,
+          "major_road_pct": 8.3,
+          "distance_error_pct": 0,
+          "repeated_pct": 0.0,
+          "unknown_surface_pct": 1.3
+        },
+        {
+          "distance_miles": 10.1,
+          "ascent_ft": 190,
+          "descent_ft": 190,
+          "major_road_pct": 5.3,
+          "distance_error_pct": 1,
+          "repeated_pct": 0.0,
+          "unknown_surface_pct": 1.2
+        },
+        {
+          "distance_miles": 10.1,
+          "ascent_ft": 258,
+          "descent_ft": 258,
+          "major_road_pct": 20.3,
+          "distance_error_pct": 1,
+          "repeated_pct": 1.0,
+          "unknown_surface_pct": 2.1
+        }
+      ],
+      "seconds": 1.374
+    },
+    {
+      "preferences": {
+        "max_ascent": null,
+        "avoid_major": true,
+        "tolerance": 10.0,
+        "lat": 40.015,
+        "lon": -105.2705,
+        "miles": 10.0,
+        "traffic": 0.8,
+        "stops": 0.6,
+        "hills": "neutral",
+        "strict": false
+      },
+      "status": "ok",
+      "routes": [
+        {
+          "distance_miles": 10.0,
+          "ascent_ft": 560,
+          "descent_ft": 560,
+          "major_road_pct": 0.0,
+          "distance_error_pct": 0,
+          "repeated_pct": 1.5,
+          "unknown_surface_pct": 7.3
+        },
+        {
+          "distance_miles": 10.2,
+          "ascent_ft": 319,
+          "descent_ft": 319,
+          "major_road_pct": 0.0,
+          "distance_error_pct": 2,
+          "repeated_pct": 3.1,
+          "unknown_surface_pct": 0.5
+        },
+        {
+          "distance_miles": 9.6,
+          "ascent_ft": 176,
+          "descent_ft": 176,
+          "major_road_pct": 0.0,
+          "distance_error_pct": 4,
+          "repeated_pct": 0.0,
+          "unknown_surface_pct": 4.5
+        }
+      ],
+      "seconds": 1.838
+    }
+  ]
+}

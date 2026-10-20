@@ -16,7 +16,7 @@ Reviewed October 20, 2026. These are engineering notes, not a substitute for rev
 - **OSM raster tiles:** use HTTPS, visible attribution, normal browser caching and valid referrer; no bulk downloads, prefetching, or offline tile bundling. Service is best effort. The tile URL is configurable. [Tile usage policy](https://operations.osmfoundation.org/policies/tiles/).
 - **No public Nominatim integration:** start presets, coordinate entry and map clicks satisfy this MVP without a geocoder. The public service has an aggregate maximum of one request per second, identification/caching requirements, prohibits autocomplete, and specifically limits how generic generated search services may use it. A future address-search feature requires a deliberate provider choice and compliance with its terms. [Nominatim policy](https://operations.osmfoundation.org/policies/nominatim/).
 
-## Priority next steps
+## Priority next steps (original MVP; see v0.3 below)
 
 1. Turn-restriction relation ingestion and direction-sensitive access/barrier logic; audit routes against real local cycling knowledge.
 2. Elevation raster integration and credible road/traffic attributes, each with provenance and coverage.
