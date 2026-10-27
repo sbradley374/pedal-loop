@@ -12,6 +12,10 @@ A local road-cycling loop planner with real OpenStreetMap roads, terrain elevati
 - Persistent GPX/result links, saved rides on this browser, copyable unlisted links, location selection, and an approximate coverage circle.
 - A production WSGI entrypoint, Docker packaging, CI, and regional benchmark tooling. See [deployment guidance](docs/DEPLOYMENT.md) and [development status](docs/ROADMAP.md).
 
+## Live ride beta
+
+Real-road results now include **Start live ride**: foreground GPS speed, estimated mileage, route progress, and approximate upcoming mapped cues. GPS stays in the browser. Tracking pauses when hidden; this is not yet a native app or complete turn-by-turn system. See [navigation behavior and remaining work](docs/NAVIGATION.md).
+
 ## Run
 
 The bundled Providence and Burlington road/elevation snapshots need only Python 3.9+:

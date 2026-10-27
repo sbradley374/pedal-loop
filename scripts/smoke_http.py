@@ -50,6 +50,11 @@ def main():
     result=request('/api/results/'+job['result_id'])
     if args.result_file:args.result_file.write_text(result['id']+'\n')
     assert all(r['coordinates'][0]==r['coordinates'][-1] for r in result['routes'])
+    for route in result['routes']:
+        cues=route['navigation_cues']
+        assert cues[0]['distance_m']==0
+        assert cues[-1]['coordinate_index']==len(route['coordinates'])-1
+        assert all(a['distance_m']<=b['distance_m'] for a,b in zip(cues,cues[1:]))
     xml=request('/api/gpx/'+result['id']+'/0');ET.fromstring(xml)
     assert b'Pedal Loop' in request('/?ride='+result['id'])
     print(f"Hosted search/export: {time.monotonic()-started:.2f}s, {len(result['routes'])} alternatives",flush=True)

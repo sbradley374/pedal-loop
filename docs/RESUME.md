@@ -1,6 +1,12 @@
-# Resume checkpoint — October 20, 2026
+# Resume checkpoint — October 27, 2026
 
 Resumed on October 20. Private-staging preparation now includes a Render Blueprint, shared-password gate, empty-volume seeding, online SQLite backups, and bounded load testing. Safari desktop interaction QA succeeded; see `docs/QA-2026-10-20.md`. The temporary verification server on port 8001 was stopped after testing.
+
+## October 27 update
+
+Added foreground live-ride beta: GPS speed/mileage/progress, approximate road/junction cues, pause/resume, off-route and weak-GPS warnings, local-only GPS session, wake-lock request, and loop-crossing protection. See `docs/NAVIGATION.md` for limitations and the path to complete native navigation. Routing cache version is now 4; older saved rides remain readable but may lack cues.
+
+Render was checked again and is still not installed. No hosting resources were created. Browser-control startup failed, so the new ride dashboard has not been visually or physically tested.
 
 ## Current branch
 
@@ -8,7 +14,7 @@ Resumed on October 20. Private-staging preparation now includes a Render Bluepri
 
 ## Verified
 
-- 57 Python regression tests and eight frontend tests pass; JavaScript syntax and Git whitespace checks pass.
+- 59 Python regression tests and 19 frontend tests pass; JavaScript syntax and Git whitespace checks pass.
 - Eight simultaneous uncached Providence requests: six completed in 17.5–39.7 seconds, two queue-full 429s; worst health response 0.482 seconds, peak RSS ~834 MiB. This limits expectations for concurrent traffic. See `docs/load-test-2026-10-20.json`.
 - Hosted smoke checks passed again. A saved ride and its GPX remained available after an actual Waitress process restart.
 - Boulder 10-mile strict-road-filter candidates have 0% primary/secondary road exposure and meet distance tolerance. These are software invariants, not local-rider or surveyed-elevation validation.

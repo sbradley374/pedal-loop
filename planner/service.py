@@ -13,7 +13,7 @@ import uuid
 from . import graph, routing
 from .regions import Regions
 
-CACHE_VERSION = 3  # Bump when routing, filtering, or elevation math changes.
+CACHE_VERSION = 4  # Bump when routing, filtering, or elevation math changes.
 
 
 class Busy(ValueError):

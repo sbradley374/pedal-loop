@@ -11,6 +11,8 @@
 - Geolocation button, coverage boundary, route comparison metrics, no automatic search on page load.
 - Production WSGI runner, container configuration, health endpoint, rate limits, automated tests and offline benchmark matrix.
 
+- Foreground live-ride beta with GPS metrics, bounded route matching, and approximate mapped cues; see `NAVIGATION.md`. Native background navigation remains separate work.
+
 ## Release gates not yet satisfied
 
 - No hosted URL or hosting account has been provisioned. Docker build/run and container-recreation checks passed in GitHub Actions run 39495796695. Local Waitress restart persistence passed.
