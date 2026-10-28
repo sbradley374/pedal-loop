@@ -6,7 +6,26 @@ Resumed on October 20. Private-staging preparation now includes a Render Bluepri
 
 Added foreground live-ride beta: GPS speed/mileage/progress, approximate road/junction cues, pause/resume, off-route and weak-GPS warnings, local-only GPS session, wake-lock request, and loop-crossing protection. See `docs/NAVIGATION.md` for limitations and the path to complete native navigation. Routing cache version is now 4; older saved rides remain readable but may lack cues.
 
-Render was checked again and is still not installed. No hosting resources were created. Browser-control startup failed, so the new ride dashboard has not been visually or physically tested.
+Render is now connected through the plugin. The new ride dashboard has not been visually or physically tested.
+
+### Render deployment continuation
+
+### Local hosting after Oracle capacity failure
+
+The user opted against paid Render hosting. Oracle signup succeeded in home region Ashburn; the user created `pedal-loop-vcn`, but A1 instance creation failed with out-of-capacity errors in all three availability domains. No Oracle compute instance was successfully created in this workflow.
+
+The user requested local hosting and a temporary HTTPS link. Installed `cloudflared` through Homebrew. Password-protected Waitress is running on `127.0.0.1:8000`, with imports disabled and the exact loopback proxy trusted. Credentials are in the Git-ignored, owner-readable `.env.local-beta`; never commit or display them in logs. Local HTTP smoke checks passed for route search, alternatives, cancellation, saved-result retrieval, and GPX.
+
+The user explicitly approved Cloudflare proxying the password-protected app and saved rides. The temporary tunnel is running at https://mega-molecular-pre-organisms.trycloudflare.com . HTTPS smoke checks passed for routing, three alternatives, result retrieval, cancellation, and GPX; unauthenticated app requests return 401. Verification used `SSL_CERT_FILE=/etc/ssl/cert.pem` because the local Python installation lacks a configured CA bundle. The Mac must remain awake and connected, and the server/tunnel processes must remain running. Restarting the quick tunnel produces a new URL. To restart locally, export the variables in `.env.local-beta` and run `.venv/bin/python serve.py`; run `cloudflared tunnel --url http://127.0.0.1:8000 --no-autoupdate` in a second terminal. Stop each with Ctrl-C in its terminal. Current agent-managed process sessions: server 19668, tunnel 70789.
+
+### Earlier Render investigation
+
+- Verified October 27 pricing: `2c-4g` (2 CPUs / 4 GB) is $85/month; the proposed 2 GB persistent disk is $0.50/month ($0.25/GB/month). Hosting baseline is **$85.50/month**, excluding workspace fees, usage overages, taxes, and off-host backups. Source: https://render.com/pricing?trk=public_profile__reactions-text . The workspace billing plan has not been inspected.
+- Remote branch `feat/routing-speed-and-hosted-beta` matches local commit `171720b7a983141614e2f1deaa000b4e3b27e3ea`; working tree was clean before this checkpoint update.
+- Plugin lists “My Workspace,” ID `tea-dbgbm22vcj2c73bo0040`, but no workspace is selected. User confirmation of workspace is pending; no workspace resources were inspected or created in this continuation.
+- Plugin web-service creation lacks persistent-disk configuration. Continue with the existing Blueprint through Dashboard (or authenticated API), preserving the disk and generated staging password. Do not create a diskless substitute.
+- Safari successfully opened the Blueprint setup link but redirected to Render sign-in. Dashboard login is needed. Link: https://dashboard.render.com/blueprint/new?repo=https://github.com/sbradley374/pedal-loop . Select the feature branch explicitly during setup. Render CLI is not installed; platform Blueprint validation remains pending.
+- No paid resources were created and no deployment was started. After workspace confirmation and Dashboard login, inspect existing resources and workspace billing, review the final quote, apply the Blueprint, then verify HTTPS/auth, routing, GPX, restart persistence, proxy behavior, alerts, and off-host backups.
 
 ## Current branch
 
@@ -35,7 +54,7 @@ Read `README.md`, `docs/ROADMAP.md`, and `docs/DEPLOYMENT.md` for behavior and l
 
 1. Finish the remaining Safari/mobile checks in `docs/QA-2026-10-20.md`. Desktop generation, alternatives, save, copy link, GPX download and layout passed. A 390 × 844 responsive form looked correct, but the window/capture connection disappeared before mobile map/results checks. Arc's earlier blank-page failure also affected script-free JSON.
 2. Container verification passed: GitHub Actions run 39495796695 completed successfully for Docker build, routing smoke checks, and ride/GPX persistence after container recreation. Python 3.9/3.12 jobs passed too. Docker remains unavailable locally.
-3. Render plugin was offered but not confirmed installed/connected. `render.yaml` proposes paid 2 CPU / 4 GB hosting with a 2 GB persistent disk and generated staging password. No paid resources were created and no site is deployed. Next: connect the account, review the concrete cost, provision staging, verify HTTPS/proxy/auth, and configure alerts/off-host backups. See deployment guide.
+3. Render plugin is connected; workspace confirmation and Dashboard login are pending. `render.yaml` proposes paid 2 CPU / 4 GB hosting with a 2 GB persistent disk and generated staging password, verified at $85.50/month baseline above. No paid resources were created and no site is deployed. Next: inspect workspace billing/resources, provision staging, verify HTTPS/proxy/auth, and configure alerts/off-host backups. See deployment guide.
 4. Boulder retry succeeded: local 9 km road/terrain snapshot `data/region-545e35694e9da76e.osm.json.gz`, region ID `bf8d7a379fd363ea`. Four route cases passed (5 miles, 10 miles, traffic disabled, strict major exclusion), with three alternatives each in 1.3–1.8 seconds. See `docs/benchmark-boulder-2026-10-20.json`. The snapshot remains Git-ignored and is not bundled for fresh clones; restart the local app to discover it. Madison remains unimported. Avoid automatic retry loops.
 5. Audit routes and elevation against actual rides; continue toward managed regional datasets and a shared process-worker queue before national or multi-instance claims.
 
