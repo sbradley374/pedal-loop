@@ -1,5 +1,9 @@
 # Live ride navigation
 
+## Native iPhone implementation, October 28, 2026
+
+`ios/` now contains a SwiftUI/MapKit client with route planning, a navigation dashboard, Core Location background configuration, spoken cues, offline route/cue storage, local ride summaries, and paused session recovery. It uses the same approximate server cues and bounded route matching described below. See [iPhone setup and validation](IOS.md) for the build status and device test checklist. Native background behavior is implemented, not yet validated on a physical ride. The foreground-only restrictions below describe the browser client.
+
 ## Foreground beta, October 27, 2026
 
 Generate a real-road route, select an alternative, and choose **Start live ride**. The browser requests location permission only when you start. Synthetic demo routes cannot start a ride.
@@ -16,7 +20,7 @@ Keep the page visible. Hiding the app or locking the screen pauses tracking, and
 
 Cues come from the selected directed path's road names, junctions, and heading changes; they do not reroute the loop through another provider. Each has a distance and geometry index. The routing cache version was incremented so new searches include them. Previously saved rides remain readable; they may have no cues and display an instruction to regenerate.
 
-These cues are approximate. Roundabout exits, complicated junctions, short connecting segments, direction-specific restrictions, lane guidance, and missing map tags are not fully interpreted. Geometry can misclassify a maneuver; signs and actual road access still take precedence. There are no voice instructions, automatic rerouting, locked-screen navigation, downloaded offline basemaps, or native phone app yet. Do not advertise this beta as a complete navigation system.
+These cues are approximate. Roundabout exits, complicated junctions, short connecting segments, direction-specific restrictions, lane guidance, and missing map tags are not fully interpreted. Geometry can misclassify a maneuver; signs and actual road access still take precedence. The browser has no voice instructions or locked-screen navigation. The native iPhone client adds those implementations pending device validation. Neither client has automatic rerouting or downloaded offline basemaps. Do not advertise this beta as a complete navigation system.
 
 ## Verification
 
@@ -30,9 +34,9 @@ These cues are approximate. Roundabout exits, complicated junctions, short conne
 
 1. Audit maneuver generation against complex junctions and roundabouts; retain the map tags needed for dependable instructions and announce cues with tested lead distances.
 2. Validate map matching on real rides: parallel roads, crossings, tunnels, wrong-way travel, urban GPS noise, starts away from the loop, detours, and rejoining.
-3. Build an iOS/Android app with OS-supported background location, explicit permission and battery handling, session recovery, and locked-screen behavior. A browser screen wake lock is not a replacement.
-4. Add spoken/haptic cues, off-route recovery that preserves ride preferences, and arrival handling after those behaviors are validated.
+3. Build and validate the new iOS app's background location, permissions, battery use, recovery, and locked-screen behavior. Android is not implemented. A browser screen wake lock is not a replacement.
+4. Validate the native spoken/haptic cues and arrival behavior, then add off-route recovery that preserves ride preferences.
 5. License/provision offline basemaps and keep the selected route/cues available through loss of connectivity. Define tracking retention and optional ride-history controls before storing location histories.
 6. Test on physical iPhone and Android devices, including denied permissions, calls, screen locking, app termination, battery restrictions, and long rides.
 
-Public deployment still requires Render installation/connection, approval of a concrete hosting quote, and HTTPS staging verification. The prepared Render deployment configuration remains available; no resources were provisioned in this session.
+Development hosting currently uses the local password-protected Python server through an explicitly approved temporary Cloudflare HTTPS tunnel. The Mac must remain awake and online. Oracle A1 provisioning failed for lack of capacity; paid Render hosting was deferred.

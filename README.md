@@ -14,7 +14,13 @@ A local road-cycling loop planner with real OpenStreetMap roads, terrain elevati
 
 ## Live ride beta
 
-Real-road results now include **Start live ride**: foreground GPS speed, estimated mileage, route progress, and approximate upcoming mapped cues. GPS stays in the browser. Tracking pauses when hidden; this is not yet a native app or complete turn-by-turn system. See [navigation behavior and remaining work](docs/NAVIGATION.md).
+Real-road results now include **Start live ride**: foreground GPS speed, estimated mileage, route progress, and approximate upcoming mapped cues. Browser tracking pauses when hidden. See [navigation behavior and remaining work](docs/NAVIGATION.md).
+
+## Native iPhone beta
+
+The new SwiftUI app in [`ios/`](ios/) connects to the same Python route engine over HTTPS. It includes Apple Maps, route alternatives and climbing profiles, saved routes/GPX export, and a native ride interface with GPS progress, spoken cues, pause/resume, and session recovery. Background location is implemented but requires physical-device validation. This remains an approximate route-following beta; automatic rerouting and downloaded offline basemaps are not implemented.
+
+Start with the [iPhone setup and test guide](docs/IOS.md). The Xcode project is checked in; no App Store submission is needed for local development installation. Route generation still needs the running backend.
 
 ## Run
 

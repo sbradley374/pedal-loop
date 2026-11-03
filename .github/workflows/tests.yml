@@ -4,8 +4,10 @@ permissions:
   contents: read
 jobs:
   offline:
-    runs-on: ubuntu-latest
+    # Python 3.9 builds are available for 24.04, but not Ubuntu 26.04.
+    runs-on: ubuntu-24.04
     strategy:
+      fail-fast: false
       matrix:
         python: ['3.9', '3.12']
     steps:

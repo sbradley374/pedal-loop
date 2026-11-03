@@ -1,4 +1,26 @@
-# Resume checkpoint — October 27, 2026
+# Resume checkpoint — November 2, 2026
+
+## November 2: physical iPhone setup
+
+The user selected their Personal Team in Xcode, enabled Developer Mode and trusted their development certificate on the connected iPhone 16 Pro, then confirmed the app opened. Physical-device launch is confirmed by the user; a complete outdoor ride, background GPS/audio and recovery validation remain pending. The selected team is now preserved in ignored `ios/Signing.local.xcconfig`, optionally included by the generated project, so the repository contains no machine-specific team choice. The iPad orientation warning was corrected by including all four iPad orientations.
+
+The old quick tunnel expired. Current password-protected development URL: https://coalition-subcommittee-alone-yarn.trycloudflare.com (process session 93538). HTTP smoke passed for generation (three alternatives), cache, cancellation, independent regions, stored results and GPX. Unauthenticated access returns 401. Credentials remain only in the ignored `.env.local-beta`. The Mac/server/tunnel must remain awake and connected.
+
+GitHub run 40726705280 failed before Python tests: `ubuntu-latest` selected Ubuntu 26.04, which lacks Python 3.9 binaries. Container checks passed; Python 3.12 was cancelled by matrix fail-fast. `.github/workflows/tests.yml` now pins the offline job to Ubuntu 24.04 and disables fail-fast; Python's official build manifest confirms 3.9/3.12 support there. The user requested committing and pushing all progress on the existing feature branch. Rerouting remains future work; `docs/IOS.md` records recovery and validation priorities.
+
+## October 28: native iPhone beta
+
+The user requested implementation of the phone-testable native app, including maps and navigation, and installed Xcode. Added `ios/PedalLoop.xcodeproj` (XcodeGen source `ios/project.yml`) and a local PedalCore Swift package. The SwiftUI client uses MapKit, the existing HTTPS API, Keychain settings, route alternatives/profiles, GPX export, downloaded routes/cues, Core Location, spoken mapped cues, bounded GPS progress, pause/resume, local summaries and paused recovery. Simulation previews a route without GPS. Read `docs/IOS.md` before continuing.
+
+Verified: 16 Swift core tests pass; native API smoke generated three Burlington alternatives over authenticated HTTPS, checked cues/geometry/start matching and exported GPX. Unsigned iOS simulator build passed with Xcode 27.1. App installed/launched on the iOS 17.5 iPhone 15 Pro simulator; initial planner/map/tab screenshot inspected. Fixed the backend elevation contract (`[[distance_miles, nullable_height_m]]`) and actor-safe delegate forwarding. Git whitespace and plist checks pass. No backend changes were needed. New macOS CI workflow added but not pushed/run remotely.
+
+Remaining: choose the user's signing team, install on their physical phone, exercise the interactive planning/ride UI and background/locked-screen/audio/permission/recovery checklist. No claim of complete turn-by-turn navigation: automatic rerouting, complex junction interpretation, reliable road matching and downloaded basemaps remain unimplemented. No new paid resources, commit or push in this task; native files and documentation are working-tree changes on top of `6d60278`.
+
+Local Waitress remains on 127.0.0.1:8000 (session 19668); unauthenticated requests return 401. The October 27 tunnel expired. A replacement at `partner-pale-electric-bias.trycloudflare.com` passed the Swift smoke, then also expired after a Mac network interruption. Do not reuse those old URLs. A quick tunnel needs restarting after Cloudflare reports “Tunnel not found”; use the latest URL printed by the current process. Never print `.env.local-beta` contents.
+
+Next priority is native device testing, not paid Render provisioning. The earlier notes below are historical context.
+
+Historical quick tunnel (October 28, now expired): `arbitration-utilize-univ-victorian.trycloudflare.com`. Use the current URL above; sleep/network loss has invalidated earlier quick tunnels.
 
 Resumed on October 20. Private-staging preparation now includes a Render Blueprint, shared-password gate, empty-volume seeding, online SQLite backups, and bounded load testing. Safari desktop interaction QA succeeded; see `docs/QA-2026-10-20.md`. The temporary verification server on port 8001 was stopped after testing.
 

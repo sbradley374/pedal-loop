@@ -1,0 +1,22 @@
+name: iOS beta
+on:
+  push:
+    paths: ['ios/**', '.github/workflows/ios.yml']
+  pull_request:
+    paths: ['ios/**', '.github/workflows/ios.yml']
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: macos-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test routing contract and GPS matching
+        run: swift test --package-path ios
+      - name: Build unsigned iPhone simulator application
+        run: >-
+          xcodebuild -project ios/PedalLoop.xcodeproj -scheme PedalLoop
+          -destination 'generic/platform=iOS Simulator'
+          -derivedDataPath /tmp/pedal-loop-ios-build
+          CODE_SIGNING_ALLOWED=NO build
