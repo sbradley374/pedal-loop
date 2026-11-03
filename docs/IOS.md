@@ -23,22 +23,7 @@ A free Personal Team supports initial testing on your own device, with periodic 
 
 ## Keep the route server online
 
-Use the existing running processes when available. Otherwise, from the repository root, start the backend in one terminal:
-
-```sh
-set -a
-source .env.local-beta
-set +a
-.venv/bin/python serve.py
-```
-
-In another terminal:
-
-```sh
-cloudflared tunnel --url http://127.0.0.1:8000 --no-autoupdate --edge-ip-version 4
-```
-
-Copy the HTTPS address printed by cloudflared into the phone's Server settings. A restarted tunnel gets a new address. Both processes and the Mac must remain awake and connected for new route searches. Ctrl-C stops each process. Do not put the password in URLs, scripts, Git, or screenshots. Public beta exposure requires the shared-password gate; keep regional imports disabled.
+Follow the [startup guide](STARTUP.md) to install dependencies, create local credentials, start Waitress and open a temporary HTTPS tunnel. Use existing processes when available. Enter the current tunnel URL in the app; old URLs are not permanent configuration. The Mac must stay awake and connected for new route searches.
 
 ## Build and verification
 
@@ -53,16 +38,11 @@ xcodebuild -project ios/PedalLoop.xcodeproj -scheme PedalLoop \
 
 The project is generated from `ios/project.yml`; after changing its structure, regenerate with `xcodegen generate --spec ios/project.yml`. XcodeGen is not needed to open the checked-in project. To preserve signing across regeneration, place `PEDAL_DEVELOPMENT_TEAM = YOUR_TEAM_ID` in the ignored `ios/Signing.local.xcconfig`; `Signing.xcconfig` includes it optionally. The current Mac's selected team is preserved there. Do not commit personal signing changes or `xcuserdata`.
 
-## Next navigation milestones
+## Live API verification
 
-1. Validate full-loop rides, screen locking, audio interruptions, GPS drift and battery use on the physical phone before expanding navigation claims.
-2. Add deliberate recovery actions: **Rejoin route** and **Route home**. The backend should route from an accurate current fix to reachable forward points or the original start, honoring one-way roads and supported turn restrictions. Score rejoin points for added distance, repeated roads and the rider's road/climbing preferences. Clearly show changes and no-route failures.
-3. Add automatic rerouting only after recovery is validated. Require sustained off-route evidence, use a cooldown and cancellable requests, reject stale results, and atomically replace remaining geometry/cues. Define behavior at loop crossings, on parallel roads, during poor GPS, and without server connectivity. Live fixes would be sent to the route server for recovery; disclose this change from local-only tracking.
-4. Improve complex maneuvers and real-ride map matching; add offline basemap support and a stable backend so navigation recovery is not dependent on a Mac/tunnel being online.
+Navigation priorities, including deliberate recovery before automatic rerouting, are tracked in [the roadmap](ROADMAP.md).
 
-Rerouting is not implemented in this checkpoint. It requires a new backend recovery API and native ride-state changes; simply launching another loop search from the current position would discard the intended remaining ride.
-
-For a live contract check, export the beta credentials as above, then run:
+For a live contract check, export the beta credentials as described in the startup guide, then run:
 
 ```sh
 PEDAL_SERVER_URL=https://YOUR-CURRENT-HOST.trycloudflare.com \

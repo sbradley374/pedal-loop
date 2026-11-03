@@ -1,34 +1,28 @@
-# Development status and next milestones
+# Roadmap
 
-## Implemented in v0.3
+The [README](../README.md) describes implemented features. This page tracks remaining work; it is not a promise that hosting alone makes navigation complete.
 
-- Compressed directed road search with original geometry/edge costs and reusable preference-weighted landmark indexes.
-- Adaptive target-distance refinement, hard distance tolerance, major-road exclusion, estimated ascent limits.
-- Node-via turn restrictions from new imports; explicit disclosure of unsupported or missing restrictions.
-- Closed-loop elevation smoothing and start-independent gain counting; bridge/tunnel exposure reporting.
-- Independent region selection per request, bounded region/index caches, bounded async search workers, cancellation.
-- SQLite results, repeat-search reuse, GPX links that survive restarts, browser saved rides and link copying.
-- Geolocation button, coverage boundary, route comparison metrics, no automatic search on page load.
-- Production WSGI runner, container configuration, health endpoint, rate limits, automated tests and offline benchmark matrix.
+## 1. Validate the existing iPhone beta
 
-- Foreground live-ride beta with GPS metrics, bounded route matching, and approximate mapped cues; see `NAVIGATION.md`. Native background navigation remains separate work.
+The app builds and has launched on a physical iPhone. Complete the [device acceptance checklist](IOS.md#physical-device-acceptance-checks): full loop, crossings, wrong turns, weak GPS, permission changes, screen lock, calls/audio interruptions, battery use, termination/recovery and disconnected-server behavior. Audit routes against local cycling knowledge. Finish browser ride-dashboard/mobile QA separately.
 
-## Release gates not yet satisfied
+## 2. Improve navigation and recovery
 
-- No hosted URL or hosting account has been provisioned. Docker build/run and container-recreation checks passed in GitHub Actions run 39495796695. Local Waitress restart persistence passed.
-- Safari desktop generation, alternative selection, save/copy/export and visual layout passed; the 390-pixel form preview passed. Mobile results and remaining flows still need verification (see QA report).
-- No national data preload or nationwide route validation has been completed. Providence/Burlington are bundled. A deliberate Boulder retry succeeded locally with roads/terrain and four passing benchmark scenarios; the 9 km snapshot is not bundled in Git. Madison remains unimported. Local-rider review is still required.
-- No traffic-volume feed, live closures, full access-rule interpreter, via-way/conditional/same-way turn restrictions, or bridge-deck elevation correction.
-- No elevation calibration against surveyed roads or recorded rides. Climbing remains a terrain estimate.
-- Local bounded concurrency test completed: six uncached searches took 17.5–39.7 seconds, two excess requests rejected, health checks responsive, peak RSS ~834 MiB. Hosted load, alerts, off-site backups and recovery drills remain open.
+- Audit mapped maneuvers, roundabout exits, short connectors and complex junctions. Calibrate spoken cue lead distances with actual rides.
+- Test matching on parallel roads, urban noise, crossings and wrong-way travel. The current bounded matcher cannot reliably rejoin far ahead after a detour.
+- Add deliberate **Rejoin route** and **Route home** actions before automatic rerouting. A new backend recovery API should connect an accurate current fix to reachable forward points or the original start, respecting roads/restrictions/preferences and clearly showing no-route failures.
+- After deliberate recovery is validated, add sustained off-route detection, cooldowns, cancellable requests and stale-result rejection. Replace remaining geometry/cues atomically, with defined poor-GPS and disconnected-server behavior. Sending live fixes for recovery changes the current local-only tracking privacy model.
 
-## Next recommended milestones
+## 3. Make a stable regional beta
 
-1. Deploy a private staging instance and run browser/mobile, persistence, and load checks.
-2. Prepare and audit a small set of contrasting regions. `data/coverage-plan.json` proposes additional US regions; it is a plan, not an availability list. Use `python scripts/prepare_regions.py --only boulder madison` to inspect the plan and add `--download` to import sequentially. Failed provider requests stop the batch without automatic retry.
-3. Add recorded-ride comparison fixtures for distance/climb and local rider review of selected routes. Expand the benchmark suite as actual datasets become available.
-4. Replace the shared public download dependency with a managed OSM extract/update pipeline and a preprocessed routing engine or partitioned graph service. Add overlapping regional coverage and boundary stitching. National coverage requires this operational work, not just more presets.
-5. Add an address-search provider, editable waypoints/avoid areas, user accounts, private route collections, and a privacy/deletion flow.
-6. Add an installable mobile experience. Treat offline navigation and turn-by-turn instructions as separate projects requiring validated instructions, rerouting, and offline map licensing.
+Choose hosting only after reviewing current costs and measured resource needs. Add stable HTTPS, health/error monitoring, scheduled off-host backups and a restore drill. Keep imports controlled; review map-provider capacity and attribution. Refresh bundled snapshots to include supported restriction relations, audit representative rides, and calibrate terrain-based climbing estimates.
 
-The current architecture deliberately supports a small single-instance beta. Search workers are threads, completed results are durable, active jobs are not durable, and region imports remain capped at 30 km. A shared durable queue, process workers, and storage coordination are prerequisites for multi-instance scaling.
+There are no individual accounts, user-owned routes or account deletion workflow. Add them before promising private accounts. A shared password is only a small-group gate.
+
+## 4. Expand coverage and offline capability
+
+A globally viewable map does not supply a global routing graph. Build a managed OSM extract/update pipeline and regional coverage/boundary strategy before wider geographic claims. Current imports are capped at 30 km; jobs are in memory and threads do not provide CPU scaling. Multi-instance hosting needs shared durable jobs, process workers and coordinated storage.
+
+Downloaded native routes already retain geometry/cues. Offline basemaps require a provider/licensing choice, region downloads, storage limits and expiry management. Offline route generation/rerouting is a separate routing-engine/data project. GPX alone does not contain map tiles or an offline routing graph.
+
+Android, editable waypoints/avoid areas and TestFlight/App Store distribution remain future work. Native place search is implemented with MapKit; browser address search is not implemented.
