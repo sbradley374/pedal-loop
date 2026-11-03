@@ -1,3 +1,5 @@
+> Historical artifact from October 2026. This is not the current setup or feature status; see the [project README](../../README.md).
+
 # Example export
 
 `brown-29.8mi.gpx` is an actual output from the bundled OSM snapshot and default preferences (30 miles, traffic 0.8, stops 0.6, hills neutral, unknown pavement allowed).

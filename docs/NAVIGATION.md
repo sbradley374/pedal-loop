@@ -1,10 +1,10 @@
 # Live ride navigation
 
-## Native iPhone implementation, October 28, 2026
+## Native iPhone beta
 
 `ios/` now contains a SwiftUI/MapKit client with route planning, a navigation dashboard, Core Location background configuration, spoken cues, offline route/cue storage, local ride summaries, and paused session recovery. It uses the same approximate server cues and bounded route matching described below. See [iPhone setup and validation](IOS.md) for the build status and device test checklist. Native background behavior is implemented, not yet validated on a physical ride. The foreground-only restrictions below describe the browser client.
 
-## Foreground beta, October 27, 2026
+## Browser foreground beta
 
 Generate a real-road route, select an alternative, and choose **Start live ride**. The browser requests location permission only when you start. Synthetic demo routes cannot start a ride.
 
@@ -28,15 +28,10 @@ These cues are approximate. Roundabout exits, complicated junctions, short conne
 - Controller tests cover hiding/resuming, permission denial, watcher cleanup, and ignoring callbacks after stopping.
 - Backend tests cover named turns, cumulative cue distance, and avoiding false turns at ordinary shape points.
 - HTTP smoke verifies cues are ordered and end at the final coordinate alongside routing, GPX, cancellation, and cache checks.
-- Physical-device riding, browser layout and GPS replay against recorded real rides remain unverified. Browser control was unavailable on October 27.
+- Full physical rides, real-ride GPS replay and the newer ride dashboard layout still need validation. Historical desktop planner QA is preserved in the archive; it predates navigation.
 
-## Work required for complete mobile navigation
+## Remaining work
 
-1. Audit maneuver generation against complex junctions and roundabouts; retain the map tags needed for dependable instructions and announce cues with tested lead distances.
-2. Validate map matching on real rides: parallel roads, crossings, tunnels, wrong-way travel, urban GPS noise, starts away from the loop, detours, and rejoining.
-3. Build and validate the new iOS app's background location, permissions, battery use, recovery, and locked-screen behavior. Android is not implemented. A browser screen wake lock is not a replacement.
-4. Validate the native spoken/haptic cues and arrival behavior, then add off-route recovery that preserves ride preferences.
-5. License/provision offline basemaps and keep the selected route/cues available through loss of connectivity. Define tracking retention and optional ride-history controls before storing location histories.
-6. Test on physical iPhone and Android devices, including denied permissions, calls, screen locking, app termination, battery restrictions, and long rides.
+See [the roadmap](ROADMAP.md) for recovery/rerouting, maneuver audits, real-ride matching and offline maps. The [iPhone acceptance checklist](IOS.md#physical-device-acceptance-checks) covers background GPS/audio, interruptions and recovery. These checks are still pending despite successful device installation.
 
-Development hosting currently uses the local password-protected Python server through an explicitly approved temporary Cloudflare HTTPS tunnel. The Mac must remain awake and online. Oracle A1 provisioning failed for lack of capacity; paid Render hosting was deferred.
+For development access, use the [local server and temporary HTTPS startup guide](STARTUP.md). The Mac must remain awake and connected for new searches; there is no permanent hosted backend.
