@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#153e35"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><title>Pedal Loop — Take the long way home</title><link rel="stylesheet" href="/vendor/leaflet.css"><link rel="stylesheet" href="/style.css"><script defer src="/vendor/leaflet.js"></script><script defer src="/app.js"></script></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#153e35"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><title>Pedal Loop — Take the long way home</title><link rel="stylesheet" href="/vendor/leaflet.css"><link rel="stylesheet" href="/style.css"><script defer src="/vendor/leaflet.js"></script><script defer src="/ride-tracker.js"></script><script defer src="/ride-mode.js"></script><script defer src="/app.js"></script></head>
 <body>
 <header><a class="brand" href="/" aria-label="Pedal Loop home"><span class="brand-icon">↻</span> pedal loop<span class="tag">FIELD NOTES / 01</span></a><div class="header-right"><span class="dot"></span> <span id="region-heading">ROAD + TERRAIN EXPLORER</span> <span class="beta">BETA</span></div></header>
 <main>
@@ -28,11 +28,20 @@
 <section class="workspace" aria-label="Route results">
 <div class="map-heading"><div><span class="eyebrow">YOUR NEXT RIDE</span><h2 id="map-title">A little farther from the usual.</h2></div><button id="fit" class="text-button" type="button">↗ Fit route</button></div>
 <div class="map-wrap"><div id="map" aria-label="Interactive route map"></div><div id="source-badge" class="map-badge">Loading road data…</div><div class="map-hint">Click the map to move your start</div></div>
+<section id="ride-panel" class="ride-panel" hidden aria-label="Live ride dashboard">
+<div class="eyebrow">LIVE RIDE · FOREGROUND BETA</div>
+<p id="ride-message" role="status" aria-live="polite">Waiting for GPS…</p>
+<div class="ride-metrics"><div><strong id="ride-speed">—</strong><span>current speed</span></div><div><strong id="ride-distance">0.00 mi</strong><span>GPS distance ridden</span></div><div><strong id="ride-remaining">—</strong><span>route remaining</span></div><div><strong id="ride-time">0:00</strong><span>active elapsed time</span></div></div>
+<p class="help">NEXT MAPPED CUE · VERIFY SIGNS</p><p id="ride-next">—</p>
+<label class="checkbox"><input id="ride-follow" type="checkbox" checked><span>Keep my position centered</span></label>
+<div class="ride-actions"><button id="ride-pause" type="button" class="region-button">Pause</button><button id="ride-stop" type="button" class="region-button">End ride</button></div>
+<p class="help">Keep this screen visible. Locking the phone or switching apps pauses tracking. Mileage omits GPS gaps and may differ from your cycle computer. No automatic rerouting or spoken instructions. Check the map when safely stopped.</p>
+</section>
 <div id="status" role="status" aria-live="polite">Loading planner…</div>
 <div id="routes" class="route-cards" aria-label="Route alternatives"></div>
 <section id="detail" hidden>
 <div class="detail-top"><div><span class="eyebrow">THE RIDE, AT A GLANCE</span><h2 id="route-title">Best match</h2></div><a id="gpx" class="download" download>↓ Download GPX</a></div>
-<div class="ride-actions"><button id="save-ride" class="region-button" type="button">☆ Save ride</button><button id="share-ride" class="region-button" type="button">↗ Copy ride link</button></div>
+<p class="help">Live ride beta: GPS stays in this browser; the map provider receives the area you view. Mapped cues are approximate and do not cover every maneuver or roundabout. Review the route before riding.</p><div class="ride-actions"><button id="start-ride" class="region-button" type="button">▶ Start live ride</button><button id="save-ride" class="region-button" type="button">☆ Save ride</button><button id="share-ride" class="region-button" type="button">↗ Copy ride link</button></div>
 <div class="road-summary" id="road-summary"></div>
 <div class="metrics"><div><strong id="distance">—</strong><span>distance</span></div><div><strong id="ascent">—</strong><span>elevation gain</span></div><div><strong id="junctions">—</strong><span>mapped junctions</span></div><div><strong id="unknown">—</strong><span>surface unknown</span></div></div>
 <div class="terrain-stats"><span id="descent"></span><span id="grade"></span><span id="terrain-source"></span></div>

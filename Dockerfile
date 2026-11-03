@@ -7,6 +7,7 @@ COPY --chown=pedal:pedal planner/ planner/
 COPY --chown=pedal:pedal web/ web/
 COPY --chown=pedal:pedal data/ data/
 COPY --chown=pedal:pedal scripts/ scripts/
+RUN mkdir -p /app/storage && chown pedal:pedal /app/storage
 USER pedal
 ENV HOST=0.0.0.0 PORT=8000 DATA_DIR=/app/data ALLOW_IMPORTS=0
 EXPOSE 8000

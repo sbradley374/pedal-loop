@@ -8,6 +8,14 @@ data/*.sqlite3*
 benchmark-results/
 .coverage
 
+# Native iOS build output and per-developer signing state.
+ios/.build/
+ios/.swiftpm/
+ios/DerivedData/
+ios/Signing.local.xcconfig
+**/xcuserdata/
+*.xcuserstate
+
 # Local configuration and credentials.
 .env
 .env.*

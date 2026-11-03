@@ -1,0 +1,383 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0E6478E50EFD933C3D100547 /* PedalLoopApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43AA56A0A26603CCF088FB3D /* PedalLoopApp.swift */; };
+		1528F433FB35627D0CF16714 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 94D04DEDDC9DA64A4860FBD6 /* PrivacyInfo.xcprivacy */; };
+		1D682506E1D158DA31FBCADD /* SecureSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CF41F2FE01AD6468EC4F8A0 /* SecureSettings.swift */; };
+		2F188ACC6DC1A76D06F3D20C /* Views.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AA7748A589A0B92DB5F2C02 /* Views.swift */; };
+		3B6633474C2F2CD2300DC8BC /* PedalCore in Frameworks */ = {isa = PBXBuildFile; productRef = 601416DB13534C1DBBB91278 /* PedalCore */; };
+		77FD24041376FCC1E7C25BBA /* PlannerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823EC9350190AEFFA4967CF1 /* PlannerModel.swift */; };
+		8CBD06D3FCEEABF75FEE88C4 /* RideController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42802050C88531F01BDEFCA5 /* RideController.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		2AA7748A589A0B92DB5F2C02 /* Views.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views.swift; sourceTree = "<group>"; };
+		3693FC98F3122C35E7A8CFBC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		42802050C88531F01BDEFCA5 /* RideController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideController.swift; sourceTree = "<group>"; };
+		43AA56A0A26603CCF088FB3D /* PedalLoopApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PedalLoopApp.swift; sourceTree = "<group>"; };
+		5FAF301DBEB4835EE198C9C6 /* Signing.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Signing.xcconfig; sourceTree = "<group>"; };
+		69D511A21A4AE5531A671B2C /* ios */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ios; path = .; sourceTree = SOURCE_ROOT; };
+		6CF41F2FE01AD6468EC4F8A0 /* SecureSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureSettings.swift; sourceTree = "<group>"; };
+		823EC9350190AEFFA4967CF1 /* PlannerModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlannerModel.swift; sourceTree = "<group>"; };
+		94D04DEDDC9DA64A4860FBD6 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		ABDD1A53F689EA5AF4B145B7 /* PedalLoop.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PedalLoop.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		01B24969EE3085EF71D9555A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3B6633474C2F2CD2300DC8BC /* PedalCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		278043959DE1D53A30A02411 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				69D511A21A4AE5531A671B2C /* ios */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		5B14294D2535180D55945C12 = {
+			isa = PBXGroup;
+			children = (
+				DA967748092FC9A22FB408DE /* ios */,
+				278043959DE1D53A30A02411 /* Packages */,
+				E1ADC2EDB9B3173BF9FAD009 /* PedalLoop */,
+				97D04439C6AC6377ED712512 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		97D04439C6AC6377ED712512 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				ABDD1A53F689EA5AF4B145B7 /* PedalLoop.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		DA967748092FC9A22FB408DE /* ios */ = {
+			isa = PBXGroup;
+			children = (
+				5FAF301DBEB4835EE198C9C6 /* Signing.xcconfig */,
+			);
+			name = ios;
+			path = .;
+			sourceTree = "<group>";
+		};
+		E1ADC2EDB9B3173BF9FAD009 /* PedalLoop */ = {
+			isa = PBXGroup;
+			children = (
+				3693FC98F3122C35E7A8CFBC /* Info.plist */,
+				43AA56A0A26603CCF088FB3D /* PedalLoopApp.swift */,
+				823EC9350190AEFFA4967CF1 /* PlannerModel.swift */,
+				94D04DEDDC9DA64A4860FBD6 /* PrivacyInfo.xcprivacy */,
+				42802050C88531F01BDEFCA5 /* RideController.swift */,
+				6CF41F2FE01AD6468EC4F8A0 /* SecureSettings.swift */,
+				2AA7748A589A0B92DB5F2C02 /* Views.swift */,
+			);
+			path = PedalLoop;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		38F3E46BC581ECB50AD76703 /* PedalLoop */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BFFA903B73E041C3B2E3AB60 /* Build configuration list for PBXNativeTarget "PedalLoop" */;
+			buildPhases = (
+				F66DB933E1D7F626E2BD2562 /* Sources */,
+				9A41BF316AB27CEADB56C2BF /* Resources */,
+				01B24969EE3085EF71D9555A /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PedalLoop;
+			packageProductDependencies = (
+				601416DB13534C1DBBB91278 /* PedalCore */,
+			);
+			productName = PedalLoop;
+			productReference = ABDD1A53F689EA5AF4B145B7 /* PedalLoop.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FFCBAAAFC1058F14C11BF105 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					38F3E46BC581ECB50AD76703 = {
+						DevelopmentTeam = "$(PEDAL_DEVELOPMENT_TEAM)";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 8464B0396409EEF3862E50C3 /* Build configuration list for PBXProject "PedalLoop" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 5B14294D2535180D55945C12;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				806324E203280FFC2FBA72C4 /* XCLocalSwiftPackageReference "." */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 97D04439C6AC6377ED712512 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				38F3E46BC581ECB50AD76703 /* PedalLoop */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		9A41BF316AB27CEADB56C2BF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1528F433FB35627D0CF16714 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F66DB933E1D7F626E2BD2562 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0E6478E50EFD933C3D100547 /* PedalLoopApp.swift in Sources */,
+				77FD24041376FCC1E7C25BBA /* PlannerModel.swift in Sources */,
+				8CBD06D3FCEEABF75FEE88C4 /* RideController.swift in Sources */,
+				1D682506E1D158DA31FBCADD /* SecureSettings.swift in Sources */,
+				2F188ACC6DC1A76D06F3D20C /* Views.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		19882D4EEE7EC3F4B1CDC036 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5FAF301DBEB4835EE198C9C6 /* Signing.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "$(PEDAL_DEVELOPMENT_TEAM)";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		6AB5FD49EB1833F898F41ACA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5FAF301DBEB4835EE198C9C6 /* Signing.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "$(PEDAL_DEVELOPMENT_TEAM)";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		D3AA45C1873621C1BC47E697 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = PedalLoop/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.pedalloop.mobile.beta;
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		FDC2065C13DF8960D0D6E938 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = PedalLoop/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.pedalloop.mobile.beta;
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		8464B0396409EEF3862E50C3 /* Build configuration list for PBXProject "PedalLoop" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6AB5FD49EB1833F898F41ACA /* Debug */,
+				19882D4EEE7EC3F4B1CDC036 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		BFFA903B73E041C3B2E3AB60 /* Build configuration list for PBXNativeTarget "PedalLoop" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D3AA45C1873621C1BC47E697 /* Debug */,
+				FDC2065C13DF8960D0D6E938 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		806324E203280FFC2FBA72C4 /* XCLocalSwiftPackageReference "." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = .;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		601416DB13534C1DBBB91278 /* PedalCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PedalCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = FFCBAAAFC1058F14C11BF105 /* Project object */;
+}

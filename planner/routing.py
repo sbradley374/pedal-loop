@@ -1,4 +1,5 @@
 """Deterministic multi-anchor loop search over directed, weighted road segments."""
+from .navigation import cues
 import heapq
 import math
 import time
@@ -111,7 +112,7 @@ def summarize(graph, edges, target, prefs):
     raw_elevation = [[round(d/MILE,4),y] for d,y in profile] if covered else []
     error = abs(length-target)/target
     score = 6*error + 3*repeat + sum(edge_cost(graph,e,prefs) for e in edges)/length
-    return {'distance_miles': round(length/MILE, 1), 'distance_error_pct': round(error*100), 'repeated_pct': round(repeat*100,1), 'unknown_surface_pct': round(unknown*100,1), 'traffic_proxy': round(traffic*100), 'major_road_pct': round(sum(e.length for e in edges if e.road in {'primary','primary_link','secondary','secondary_link'})/length*100,1), 'structure_pct': round(sum(e.length for e in edges if e.structure)/length*100,1), 'junctions': len({n for n in ids if graph.is_junction(n)}), 'mapped_stops': len(set(ids)&graph.stops), 'ascent_ft': metrics['ascent_ft'] if metrics else None, 'descent_ft': metrics['descent_ft'] if metrics else None, 'max_grade_pct': metrics['max_grade_pct'] if metrics else None, 'elevation_profile': metrics['profile'] if metrics else [], 'elevation_coverage_pct': round(covered/length*100), 'elevation': raw_elevation, 'coordinates': [graph.nodes[n] for n in ids], '_keys': unique, '_score': score}
+    return {'navigation_cues': cues(graph, edges), 'distance_miles': round(length/MILE, 1), 'distance_error_pct': round(error*100), 'repeated_pct': round(repeat*100,1), 'unknown_surface_pct': round(unknown*100,1), 'traffic_proxy': round(traffic*100), 'major_road_pct': round(sum(e.length for e in edges if e.road in {'primary','primary_link','secondary','secondary_link'})/length*100,1), 'structure_pct': round(sum(e.length for e in edges if e.structure)/length*100,1), 'junctions': len({n for n in ids if graph.is_junction(n)}), 'mapped_stops': len(set(ids)&graph.stops), 'ascent_ft': metrics['ascent_ft'] if metrics else None, 'descent_ft': metrics['descent_ft'] if metrics else None, 'max_grade_pct': metrics['max_grade_pct'] if metrics else None, 'elevation_profile': metrics['profile'] if metrics else [], 'elevation_coverage_pct': round(covered/length*100), 'elevation': raw_elevation, 'coordinates': [graph.nodes[n] for n in ids], '_keys': unique, '_score': score}
 
 
 def plan(graph, prefs, cancelled=lambda: False):

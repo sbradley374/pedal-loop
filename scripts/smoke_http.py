@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Black-box checks against a running server, using cached regions only."""
 import argparse
+import base64
+import os
 import json
 from pathlib import Path
 import time
@@ -17,6 +19,9 @@ def main():
     def request(path,payload=None,method=None):
         data=json.dumps(payload).encode() if payload is not None else None
         req=urllib.request.Request(args.base+path,data=data,method=method,headers={'Content-Type':'application/json','Origin':args.base})
+        if os.environ.get('STAGING_USER') and os.environ.get('STAGING_PASSWORD'):
+            credentials=f"{os.environ['STAGING_USER']}:{os.environ['STAGING_PASSWORD']}"
+            req.add_header('Authorization','Basic '+base64.b64encode(credentials.encode()).decode())
         with urllib.request.urlopen(req,timeout=60) as response:
             body=response.read()
             return json.loads(body) if response.headers.get_content_type()=='application/json' else body
@@ -45,6 +50,11 @@ def main():
     result=request('/api/results/'+job['result_id'])
     if args.result_file:args.result_file.write_text(result['id']+'\n')
     assert all(r['coordinates'][0]==r['coordinates'][-1] for r in result['routes'])
+    for route in result['routes']:
+        cues=route['navigation_cues']
+        assert cues[0]['distance_m']==0
+        assert cues[-1]['coordinate_index']==len(route['coordinates'])-1
+        assert all(a['distance_m']<=b['distance_m'] for a,b in zip(cues,cues[1:]))
     xml=request('/api/gpx/'+result['id']+'/0');ET.fromstring(xml)
     assert b'Pedal Loop' in request('/?ride='+result['id'])
     print(f"Hosted search/export: {time.monotonic()-started:.2f}s, {len(result['routes'])} alternatives",flush=True)

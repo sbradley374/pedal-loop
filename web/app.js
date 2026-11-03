@@ -1,6 +1,7 @@
 'use strict';
 const $ = id => document.getElementById(id);
 let map, marker, tiles, routeLayer, current, selectedIndex = 0, info, revision = 0, importing = false, activeJob = null, activeRegion = null, cancelRequested = false, coverageLayer;
+let rideMode;
 const colors = ['#214e3f', '#cb764d', '#7786a5'];
 function status(message, error = false) { $('status').textContent = message; $('status').classList.toggle('error', error); }
 function updateLabels() {
@@ -8,6 +9,7 @@ function updateLabels() {
   for (const name of ['traffic', 'stops']) $(name + '-value').textContent = +$(name).value > .65 ? 'High' : +$(name).value > .3 ? 'Medium' : 'Low';
 }
 function invalidate() {
+  rideMode?.stop();
   revision++;
   if (activeJob) cancelSearch();
   current = null;
@@ -49,6 +51,7 @@ function setMode() {
   invalidate();
 }
 function selectRoute(index) {
+  rideMode?.stop();
   selectedIndex = index;
   const route = current.routes[index], synthetic = current.source.source === 'synthetic';
   for (const [i, el] of [...$('routes').children].entries()) {
@@ -60,6 +63,7 @@ function selectRoute(index) {
   L.polyline(route.coordinates, {color: colors[index], weight: 4.5, opacity: 1, bubblingMouseEvents: false}).addTo(routeLayer);
   marker.setLatLng(current.snapped_start).bindPopup(`Route starts on the network, ${current.snap_distance_m} m from your chosen point.`);
   $('detail').hidden = false;
+  $('start-ride').disabled = synthetic;
   $('route-title').textContent = route.name;
   $('distance').textContent = `${route.distance_miles} mi`;
   $('ascent').textContent = route.ascent_ft === null ? 'Unknown' : `${route.ascent_ft.toLocaleString()} ft`;
@@ -130,6 +134,7 @@ async function generate(event) {
   event?.preventDefault();
   if (importing || $('generate').disabled) return;
   if (!$('planner').reportValidity()) { status('Check the start coordinates and ride settings.',true); return; }
+  rideMode?.stop();
   const thisRevision = ++revision;
   cancelRequested=false;
   $('generate').disabled=true; $('load-region').disabled=true; $('saved-region').disabled=true;
@@ -252,7 +257,9 @@ async function init() {
   map = L.map('map',{zoomControl:false}).setView([41.8268,-71.4025],11); L.control.zoom({position:'topright'}).addTo(map);
   marker = L.marker([41.8268,-71.4025],{icon:L.divIcon({className:'start-icon',iconSize:[18,18],iconAnchor:[9,9]}),keyboard:true,title:'Chosen start'}).addTo(map);
   routeLayer=L.layerGroup().addTo(map);
-  map.on('click', e => { $('lat').value=e.latlng.lat.toFixed(6);$('lon').value=e.latlng.lng.toFixed(6);$('place').value='custom';invalidate();updateStart(); });
+  rideMode=createRideMode(map);
+  $('start-ride').addEventListener('click',()=>{if(current)rideMode.start(current.routes[selectedIndex],current.source.source==='synthetic');});
+  map.on('click', e => { if(rideMode?.active)return; $('lat').value=e.latlng.lat.toFixed(6);$('lon').value=e.latlng.lng.toFixed(6);$('place').value='custom';invalidate();updateStart(); });
   $('planner').addEventListener('submit',generate);
   $('cancel').addEventListener('click',cancelSearch);
   $('locate').addEventListener('click',()=>{

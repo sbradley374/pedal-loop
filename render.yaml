@@ -1,0 +1,25 @@
+# Paid private-beta proposal. Provision only after the owner reviews the cost.
+services:
+  - type: web
+    name: pedal-loop-staging
+    runtime: docker
+    plan: 2c-4g
+    region: virginia
+    numInstances: 1
+    autoDeployTrigger: "off"
+    healthCheckPath: /api/health
+    disk:
+      name: pedal-loop-data
+      mountPath: /app/storage
+      sizeGB: 2
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+      - key: DATA_DIR
+        value: /app/storage
+      - key: ALLOW_IMPORTS
+        value: "0"
+      - key: STAGING_USER
+        value: beta
+      - key: STAGING_PASSWORD
+        generateValue: true

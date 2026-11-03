@@ -12,6 +12,16 @@ A local road-cycling loop planner with real OpenStreetMap roads, terrain elevati
 - Persistent GPX/result links, saved rides on this browser, copyable unlisted links, location selection, and an approximate coverage circle.
 - A production WSGI entrypoint, Docker packaging, CI, and regional benchmark tooling. See [deployment guidance](docs/DEPLOYMENT.md) and [development status](docs/ROADMAP.md).
 
+## Live ride beta
+
+Real-road results now include **Start live ride**: foreground GPS speed, estimated mileage, route progress, and approximate upcoming mapped cues. Browser tracking pauses when hidden. See [navigation behavior and remaining work](docs/NAVIGATION.md).
+
+## Native iPhone beta
+
+The new SwiftUI app in [`ios/`](ios/) connects to the same Python route engine over HTTPS. It includes Apple Maps, route alternatives and climbing profiles, saved routes/GPX export, and a native ride interface with GPS progress, spoken cues, pause/resume, and session recovery. Background location is implemented but requires physical-device validation. This remains an approximate route-following beta; automatic rerouting and downloaded offline basemaps are not implemented.
+
+Start with the [iPhone setup and test guide](docs/IOS.md). The Xcode project is checked in; no App Store submission is needed for local development installation. Route generation still needs the running backend.
+
 ## Run
 
 The bundled Providence and Burlington road/elevation snapshots need only Python 3.9+:
